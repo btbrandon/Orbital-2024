@@ -1,8 +1,60 @@
+import { useState, useEffect } from "react";
 import React from "react";
-import { Text, TextInput, View, Button, Image, StyleSheet } from "react-native";
+import {
+  Text,
+  TextInput,
+  View,
+  Button,
+  Image,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import { Link } from "expo-router";
+import supabase from "../config/supabaseClient";
 
 const Login = () => {
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  const handleUsernameChange = (text: string) => {
+    setUsername(text);
+  };
+  const handlePasswordChange = (text: string) => {
+    setPassword(text);
+  };
+
+  const handleLogin = async () => {
+    try {
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("email")
+        .eq("username", username)
+        .single();
+
+      if (userError) {
+        throw userError;
+      }
+
+      if (!userData) {
+        Alert.alert("Login Error", "No user found with that username.");
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: userData.email,
+        password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      Alert.alert("Login Successful", `Welcome back, ${userData.email}!`);
+    } catch (error) {
+      Alert.alert("Login Error");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image source={require("../assets/Logo.png")} style={styles.image} />
@@ -16,7 +68,11 @@ const Login = () => {
             source={require("../assets/username.png")}
             style={styles.icon}
           />
-          <TextInput placeholder="Username" style={styles.textInput} />
+          <TextInput
+            placeholder="Username"
+            style={styles.textInput}
+            onChangeText={handleUsernameChange}
+          />
         </View>
       </View>
 
@@ -32,6 +88,7 @@ const Login = () => {
             secureTextEntry={true}
             placeholder="Password"
             style={styles.textInput}
+            onChangeText={handlePasswordChange}
           />
         </View>
       </View>
@@ -49,11 +106,7 @@ const Login = () => {
 
       {/* Button */}
       <View style={styles.buttonContainer}>
-        <Button
-          title="LOGIN"
-          onPress={() => alert("Login pressed!")}
-          color="#FFFFFF"
-        />
+        <Button title="LOGIN" onPress={handleLogin} color="#FFFFFF" />
       </View>
     </View>
   );

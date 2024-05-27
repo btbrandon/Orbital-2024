@@ -1,8 +1,62 @@
-import React from "react";
-import { Text, TextInput, View, Button, Image, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import {
+  Text,
+  TextInput,
+  View,
+  Button,
+  Image,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import { Link } from "expo-router";
+import supabase from "../config/supabaseClient";
 
 const Signup = () => {
+  const [email, setEmail] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [formError, setFormError] = useState<string>("");
+
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+  };
+  const handleUsernameChange = (text: string) => {
+    setUsername(text);
+  };
+  const handlePasswordChange = (text: string) => {
+    setPassword(text);
+  };
+
+  const handleSignup = async (e: { preventDefault: () => void }) => {
+    if (!email || !username || !password) {
+      setFormError("Please fill in all the fields");
+      return;
+    }
+
+    // check if email & username is unique
+    const { data: existingUserByUsername, error: usernameError } =
+      await supabase.from("users").select().eq("username", username).single();
+
+    const { data: existingUserByEmail, error: emailError } = await supabase
+      .from("users")
+      .select()
+      .eq("email", email)
+      .single();
+
+    if (!existingUserByEmail && !existingUserByUsername) {
+      // email/username not taken -> insert
+      const { data, error } = await supabase
+        .from("users")
+        .insert([{ email, username, password }]);
+    } else if (!existingUserByEmail) {
+      // email taken
+      setFormError("Email already linked to an existing user.");
+    } else {
+      // username taken
+      setFormError("Username is taken.");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image source={require("../assets/Logo.png")} style={styles.image} />
@@ -12,7 +66,12 @@ const Signup = () => {
         <Text style={styles.text}>Email</Text>
         <View style={styles.row}>
           <Image source={require("../assets/email.webp")} style={styles.icon} />
-          <TextInput placeholder="Email" style={styles.textInput} />
+          <TextInput
+            placeholder="Email"
+            style={styles.textInput}
+            keyboardType="email-address"
+            onChangeText={handleEmailChange}
+          />
         </View>
       </View>
 
@@ -23,7 +82,11 @@ const Signup = () => {
             source={require("../assets/username.png")}
             style={styles.icon}
           />
-          <TextInput placeholder="Username" style={styles.textInput} />
+          <TextInput
+            placeholder="Username"
+            style={styles.textInput}
+            onChangeText={handleUsernameChange}
+          />
         </View>
       </View>
 
@@ -38,6 +101,7 @@ const Signup = () => {
             secureTextEntry={true}
             placeholder="Password"
             style={styles.textInput}
+            onChangeText={handlePasswordChange}
           />
         </View>
       </View>
@@ -49,12 +113,10 @@ const Signup = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <Button
-          title="SIGN UP"
-          onPress={() => alert("Sign up pressed!")}
-          color="#FFFFFF"
-        />
+        <Button title="SIGN UP" onPress={handleSignup} color="#FFFFFF" />
       </View>
+
+      {formError && <Text>{formError}</Text>}
     </View>
   );
 };
