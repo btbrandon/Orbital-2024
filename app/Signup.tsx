@@ -33,27 +33,62 @@ const Signup = () => {
       return;
     }
 
-    // check if email & username is unique
-    const { data: existingUserByUsername, error: usernameError } =
-      await supabase.from("users").select().eq("username", username).single();
+    try {
+      // Check if username is already taken
+      const { data: existingUserByUsername, error: usernameError } =
+        await supabase
+          .from("users_credentials")
+          .select("user_id")
+          .eq("username", username)
+          .single();
 
-    const { data: existingUserByEmail, error: emailError } = await supabase
-      .from("users")
-      .select()
-      .eq("email", email)
-      .single();
+      if (usernameError && usernameError.code !== "PGRST116") {
+        // PGRST116 indicates no rows found, ignore this error
+        throw usernameError;
+      }
 
-    if (!existingUserByEmail && !existingUserByUsername) {
-      // email/username not taken -> insert
+      // Check if email is already taken
+      const { data: existingUserByEmail, error: emailError } = await supabase
+        .from("users_credentials")
+        .select("user_id")
+        .eq("email", email)
+        .single();
+
+      if (emailError && emailError.code !== "PGRST116") {
+        throw emailError;
+      }
+
+      if (existingUserByUsername) {
+        setFormError("");
+        setFormError("Username is taken.");
+        Alert.alert(formError);
+        return;
+      }
+
+      if (existingUserByEmail) {
+        setFormError("");
+        setFormError("Email already linked to an existing user.");
+        Alert.alert(formError);
+        return;
+      }
+
+      // If no errors and both email and username are unique, proceed with insertion
       const { data, error } = await supabase
-        .from("users")
+        .from("users_credentials")
         .insert([{ email, username, password }]);
-    } else if (!existingUserByEmail) {
-      // email taken
-      setFormError("Email already linked to an existing user.");
-    } else {
-      // username taken
-      setFormError("Username is taken.");
+
+      if (error) {
+        throw error;
+      }
+
+      Alert.alert(
+        "Signup Successful",
+        "Welcome! Your account has been created."
+      );
+    } catch (error: any) {
+      console.error("Signup error:", error);
+      setFormError(error.message || "An unexpected error occurred");
+      Alert.alert(formError);
     }
   };
 
@@ -115,8 +150,6 @@ const Signup = () => {
       <View style={styles.buttonContainer}>
         <Button title="SIGN UP" onPress={handleSignup} color="#FFFFFF" />
       </View>
-
-      {formError && <Text>{formError}</Text>}
     </View>
   );
 };
@@ -124,7 +157,7 @@ const Signup = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#DDA0DD",
+    backgroundColor: "#ffc6ff",
   },
 
   header: {
@@ -178,7 +211,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     margin: 30,
-    marginTop: 70,
+    marginTop: 45,
     alignSelf: "center",
   },
 
@@ -200,11 +233,6 @@ const styles = StyleSheet.create({
   leftLink: {
     textAlign: "left",
     marginLeft: 10,
-  },
-
-  rightLink: {
-    textAlign: "right",
-    marginRight: 10,
   },
 });
 
