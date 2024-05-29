@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import React from "react";
 import {
   Text,
@@ -8,13 +8,17 @@ import {
   Image,
   StyleSheet,
   Alert,
+  StatusBar,
 } from "react-native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import supabase from "../config/supabaseClient";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Login = () => {
+  StatusBar.setHidden(true); // Hide the status bar
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [formError, setFormError] = useState<string>("");
 
   const handleUsernameChange = (text: string) => {
     setUsername(text);
@@ -24,109 +28,128 @@ const Login = () => {
   };
 
   const handleLogin = async () => {
+    if (!username || !password) {
+      setFormError("Please fill in all the fields");
+      return;
+    }
+
     try {
       const { data: userData, error: userError } = await supabase
-        .from("users")
-        .select("email")
+        .from("user_credentials")
+        .select()
         .eq("username", username)
         .single();
 
       if (userError) {
-        throw userError;
+        setFormError("Error retrieving user: " + userError.message);
+        return;
       }
 
       if (!userData) {
-        Alert.alert("Login Error", "No user found with that username.");
+        setFormError("No user found with that username.");
         return;
       }
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email: userData.email,
-        password,
+        password: password,
       });
 
       if (error) {
-        throw error;
+        setFormError("Login Error: " + error.message);
+        Alert.alert("Login Error", `${error}`);
+        return;
       }
 
-      Alert.alert("Login Successful", `Welcome back, ${userData.email}!`);
-    } catch (error) {
-      Alert.alert("Login Error");
+      Alert.alert("Login Successful", `Welcome back, ${userData.username}!`);
+      setFormError("");
+      router.replace("Homepage");
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "An unexpected error occurred");
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={require("../assets/Logo.png")} style={styles.image} />
-      <Text style={styles.header}>Login</Text>
+    <SafeAreaView style={styles.safeContainer}>
+      <View style={styles.container}>
+        <Image source={require("../assets/Logo.png")} style={styles.image} />
+        <Text style={styles.header}>Login</Text>
 
-      {/* Username */}
-      <View style={styles.loginInputContainer}>
-        <Text style={styles.text}>Username</Text>
-        <View style={styles.row}>
-          <Image
-            source={require("../assets/username.png")}
-            style={styles.icon}
-          />
-          <TextInput
-            placeholder="Username"
-            style={styles.textInput}
-            onChangeText={handleUsernameChange}
-          />
+        {/* Username */}
+        <View style={styles.loginInputContainer}>
+          <Text style={styles.text}>Username</Text>
+          <View style={styles.row}>
+            <Image
+              source={require("../assets/username.png")}
+              style={styles.icon}
+            />
+            <TextInput
+              placeholder="Username"
+              style={styles.textInput}
+              onChangeText={handleUsernameChange}
+            />
+          </View>
+        </View>
+
+        {/* Password */}
+        <View style={styles.loginInputContainer}>
+          <Text style={styles.text}>Password</Text>
+          <View style={styles.row}>
+            <Image
+              source={require("../assets/password.png")}
+              style={styles.icon}
+            />
+            <TextInput
+              secureTextEntry={true}
+              placeholder="Password"
+              style={styles.textInput}
+              onChangeText={handlePasswordChange}
+            />
+          </View>
+        </View>
+
+        {/* Don't have an account? / Forgot your password? */}
+        <View style={styles.linkContainer}>
+          <Link href="Signup" style={styles.leftLink}>
+            Don't have an account?
+          </Link>
+
+          <Link href="ForgotPassword" style={styles.rightLink}>
+            Forgot your password?
+          </Link>
+        </View>
+
+        {/* Button */}
+        <View style={styles.buttonContainer}>
+          <Button title="LOGIN" onPress={handleLogin} color="#FFFFFF" />
         </View>
       </View>
-
-      {/* Password */}
-      <View style={styles.loginInputContainer}>
-        <Text style={styles.text}>Password</Text>
-        <View style={styles.row}>
-          <Image
-            source={require("../assets/password.png")}
-            style={styles.icon}
-          />
-          <TextInput
-            secureTextEntry={true}
-            placeholder="Password"
-            style={styles.textInput}
-            onChangeText={handlePasswordChange}
-          />
-        </View>
-      </View>
-
-      {/* Don't have an account? / Forgot your password? */}
-      <View style={styles.linkContainer}>
-        <Link href="Signup" style={styles.leftLink}>
-          Don't have an account?
-        </Link>
-
-        <Link href="ForgotPassword" style={styles.rightLink}>
-          Forgot your password?
-        </Link>
-      </View>
-
-      {/* Button */}
-      <View style={styles.buttonContainer}>
-        <Button title="LOGIN" onPress={handleLogin} color="#FFFFFF" />
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeContainer: {
+    flex: 1,
+    backgroundColor: "#ffc6ff",
+    padding: 0, // Ensure no padding
+    margin: 0, // Ensure no margin
+  },
   container: {
     flex: 1,
-    backgroundColor: "#DDA0DD",
+    flexDirection: "column",
+    backgroundColor: "#ffc6ff",
+    // #DDA0DD
   },
-
   header: {
     fontWeight: "bold",
     fontFamily: "Verdana",
     fontSize: 35,
     height: 50,
+    marginTop: 30,
     textAlign: "center",
     justifyContent: "center",
   },
-
   buttonContainer: {
     backgroundColor: "#212121",
     padding: 10,
@@ -139,7 +162,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 15,
   },
-
   loginInputContainer: {
     backgroundColor: "white",
     fontSize: 20,
@@ -151,12 +173,10 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontFamily: "Verdana",
   },
-
   row: {
     flexDirection: "row",
     margin: 5,
   },
-
   text: {
     marginLeft: 10,
     backgroundColor: "white",
@@ -164,35 +184,27 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontFamily: "Verdana",
   },
-
   image: {
     width: 100,
     height: 100,
-    margin: 30,
-    marginTop: 70,
     alignSelf: "center",
   },
-
   icon: {
     width: 20,
     height: 20,
     marginRight: 10,
   },
-
   textInput: { fontSize: 15, fontFamily: "Verdana" },
-
   linkContainer: {
     flexDirection: "row",
     margin: 5,
     marginBottom: 30,
     justifyContent: "space-between",
   },
-
   leftLink: {
     textAlign: "left",
     marginLeft: 10,
   },
-
   rightLink: {
     textAlign: "right",
     marginRight: 10,

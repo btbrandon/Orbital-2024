@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import supabase from "../config/supabaseClient";
 
 const Signup = () => {
@@ -30,6 +30,7 @@ const Signup = () => {
   const handleSignup = async (e: { preventDefault: () => void }) => {
     if (!email || !username || !password) {
       setFormError("Please fill in all the fields");
+      Alert.alert(formError);
       return;
     }
 
@@ -37,7 +38,7 @@ const Signup = () => {
       // Check if username is already taken
       const { data: existingUserByUsername, error: usernameError } =
         await supabase
-          .from("users_credentials")
+          .from("user_credentials")
           .select("user_id")
           .eq("username", username)
           .single();
@@ -49,7 +50,7 @@ const Signup = () => {
 
       // Check if email is already taken
       const { data: existingUserByEmail, error: emailError } = await supabase
-        .from("users_credentials")
+        .from("user_credentials")
         .select("user_id")
         .eq("email", email)
         .single();
@@ -59,32 +60,33 @@ const Signup = () => {
       }
 
       if (existingUserByUsername) {
-        setFormError("");
         setFormError("Username is taken.");
         Alert.alert(formError);
         return;
       }
 
       if (existingUserByEmail) {
-        setFormError("");
         setFormError("Email already linked to an existing user.");
         Alert.alert(formError);
         return;
       }
 
       // If no errors and both email and username are unique, proceed with insertion
-      const { data, error } = await supabase
-        .from("users_credentials")
-        .insert([{ email, username, password }]);
+      const { data, error } = await supabase.auth.signUp({ email, password });
 
       if (error) {
         throw error;
       }
 
+      const { data: credData, credError } = await supabase
+        .from("user_credentials")
+        .insert([{ email, username, password }]);
+
       Alert.alert(
         "Signup Successful",
         "Welcome! Your account has been created."
       );
+      router.replace("/");
     } catch (error: any) {
       console.error("Signup error:", error);
       setFormError(error.message || "An unexpected error occurred");
