@@ -7,6 +7,9 @@ import {
   Image,
   StyleSheet,
   Alert,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { Link, router } from "expo-router";
 import supabase from "../config/supabaseClient";
@@ -96,62 +99,67 @@ const Signup = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../assets/Logo.png")} style={styles.image} />
-      <Text style={styles.header}>Sign Up</Text>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <Image source={require("../assets/Logo.png")} style={styles.image} />
+        <Text style={styles.header}>Sign Up</Text>
 
-      <View style={styles.loginInputContainer}>
-        <Text style={styles.text}>Email</Text>
-        <View style={styles.row}>
-          <Image source={require("../assets/email.webp")} style={styles.icon} />
-          <TextInput
-            placeholder="Email"
-            style={styles.textInput}
-            keyboardType="email-address"
-            onChangeText={handleEmailChange}
-          />
+        <View style={styles.loginInputContainer}>
+          <Text style={styles.text}>Email</Text>
+          <View style={styles.row}>
+            <Image
+              source={require("../assets/email.webp")}
+              style={styles.icon}
+            />
+            <TextInput
+              placeholder="Email"
+              style={styles.textInput}
+              keyboardType="email-address"
+              onChangeText={handleEmailChange}
+            />
+          </View>
         </View>
-      </View>
 
-      <View style={styles.loginInputContainer}>
-        <Text style={styles.text}>Username</Text>
-        <View style={styles.row}>
-          <Image
-            source={require("../assets/username.png")}
-            style={styles.icon}
-          />
-          <TextInput
-            placeholder="Username"
-            style={styles.textInput}
-            onChangeText={handleUsernameChange}
-          />
+        <View style={styles.loginInputContainer}>
+          <Text style={styles.text}>Username</Text>
+          <View style={styles.row}>
+            <Image
+              source={require("../assets/username.png")}
+              style={styles.icon}
+            />
+            <TextInput
+              placeholder="Username"
+              style={styles.textInput}
+              onChangeText={handleUsernameChange}
+            />
+          </View>
         </View>
-      </View>
 
-      <View style={styles.loginInputContainer}>
-        <Text style={styles.text}>Password</Text>
-        <View style={styles.row}>
-          <Image
-            source={require("../assets/password.png")}
-            style={styles.icon}
-          />
-          <TextInput
-            secureTextEntry={true}
-            placeholder="Password"
-            style={styles.textInput}
-            onChangeText={handlePasswordChange}
-          />
+        <View style={styles.loginInputContainer}>
+          <Text style={styles.text}>Password</Text>
+          <View style={styles.row}>
+            <Image
+              source={require("../assets/password.png")}
+              style={styles.icon}
+            />
+            <TextInput
+              secureTextEntry={true}
+              placeholder="Password"
+              style={styles.textInput}
+              onChangeText={handlePasswordChange}
+            />
+          </View>
         </View>
-      </View>
 
-      <View style={styles.linkContainer}>
-        <Link href="/" style={styles.leftLink}>
-          Already have an account?
-        </Link>
-      </View>
+        <View style={styles.linkContainer}>
+          <Link href="/" style={styles.leftLink}>
+            Already have an account?
+          </Link>
+        </View>
 
-      <View style={styles.buttonContainer}>
-        <Button title="SIGN UP" onPress={handleSignup} color="#FFFFFF" />
-      </View>
+        <View style={styles.buttonContainer}>
+          <Button title="SIGN UP" onPress={handleSignup} color="#FFFFFF" />
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -159,9 +167,9 @@ const Signup = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffc6ff",
+    backgroundColor: "white",
+    // #DDA0DD
   },
-
   header: {
     fontWeight: "bold",
     fontFamily: "Verdana",
@@ -170,9 +178,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     justifyContent: "center",
   },
-
   buttonContainer: {
-    backgroundColor: "#212121",
+    backgroundColor: "#274653",
     padding: 10,
     justifyContent: "center",
     fontWeight: "bold",
@@ -183,7 +190,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 15,
   },
-
   loginInputContainer: {
     backgroundColor: "white",
     fontSize: 20,
@@ -194,13 +200,13 @@ const styles = StyleSheet.create({
     borderColor: "white",
     textAlign: "left",
     fontFamily: "Verdana",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.5,
   },
-
   row: {
     flexDirection: "row",
     margin: 5,
   },
-
   text: {
     marginLeft: 10,
     backgroundColor: "white",
@@ -208,7 +214,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     fontFamily: "Verdana",
   },
-
   image: {
     width: 100,
     height: 100,
@@ -216,25 +221,27 @@ const styles = StyleSheet.create({
     marginTop: 45,
     alignSelf: "center",
   },
-
   icon: {
     width: 20,
     height: 20,
     marginRight: 10,
   },
-
   textInput: { fontSize: 15, fontFamily: "Verdana" },
-
   linkContainer: {
     flexDirection: "row",
     margin: 5,
     marginBottom: 30,
     justifyContent: "space-between",
   },
-
   leftLink: {
     textAlign: "left",
     marginLeft: 10,
+    marginVertical: 10,
+  },
+  rightLink: {
+    textAlign: "right",
+    marginRight: 10,
+    marginVertical: 10,
   },
 });
 

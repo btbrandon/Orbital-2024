@@ -70,8 +70,8 @@ const Login = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View>
         <Image source={require("../assets/Logo.png")} style={styles.image} />
         <Text style={styles.header}>Login</Text>
 
@@ -129,16 +129,9 @@ const Login = () => {
 };
 
 const styles = StyleSheet.create({
-  safeContainer: {
-    flex: 1,
-    backgroundColor: "#ffc6ff",
-    padding: 0, // Ensure no padding
-    margin: 0, // Ensure no margin
-  },
   container: {
     flex: 1,
-    flexDirection: "column",
-    backgroundColor: "#ffc6ff",
+    backgroundColor: "white",
     // #DDA0DD
   },
   header: {
@@ -146,12 +139,11 @@ const styles = StyleSheet.create({
     fontFamily: "Verdana",
     fontSize: 35,
     height: 50,
-    marginTop: 30,
     textAlign: "center",
     justifyContent: "center",
   },
   buttonContainer: {
-    backgroundColor: "#212121",
+    backgroundColor: "#274653",
     padding: 10,
     justifyContent: "center",
     fontWeight: "bold",
@@ -172,6 +164,8 @@ const styles = StyleSheet.create({
     borderColor: "white",
     textAlign: "left",
     fontFamily: "Verdana",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.5,
   },
   row: {
     flexDirection: "row",
@@ -187,6 +181,8 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
+    margin: 30,
+    marginTop: 45,
     alignSelf: "center",
   },
   icon: {
@@ -204,10 +200,12 @@ const styles = StyleSheet.create({
   leftLink: {
     textAlign: "left",
     marginLeft: 10,
+    marginVertical: 10,
   },
   rightLink: {
     textAlign: "right",
     marginRight: 10,
+    marginVertical: 10,
   },
 });
 

@@ -30,7 +30,7 @@ const Homepage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffc6ff",
+    backgroundColor: "white",
   },
   header: {
     fontWeight: "bold",

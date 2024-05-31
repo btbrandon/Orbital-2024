@@ -36,9 +36,8 @@ const ForgotPassword = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#DDA0DD",
+    backgroundColor: "white",
   },
-
   header: {
     fontWeight: "bold",
     fontFamily: "Verdana",
@@ -47,9 +46,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     justifyContent: "center",
   },
-
   buttonContainer: {
-    backgroundColor: "#212121",
+    backgroundColor: "#274653",
     padding: 10,
     justifyContent: "center",
     fontWeight: "bold",
@@ -60,7 +58,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 15,
   },
-
   loginInputContainer: {
     backgroundColor: "white",
     fontSize: 20,
@@ -71,20 +68,19 @@ const styles = StyleSheet.create({
     borderColor: "white",
     textAlign: "left",
     fontFamily: "Verdana",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 0.5,
   },
-
   row: {
     flexDirection: "row",
     margin: 5,
   },
-
   text: {
     marginLeft: 10,
     fontSize: 18,
     textAlign: "left",
     fontFamily: "Verdana",
   },
-
   information: {
     margin: 20,
     fontSize: 18,
@@ -92,7 +88,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     fontFamily: "Verdana",
   },
-
   image: {
     width: 100,
     height: 100,
@@ -100,30 +95,16 @@ const styles = StyleSheet.create({
     marginTop: 70,
     alignSelf: "center",
   },
-
   icon: {
     width: 20,
     height: 20,
     marginRight: 10,
   },
-
   textInput: { fontSize: 15, fontFamily: "Verdana" },
-
-  linkContainer: {
-    flexDirection: "row",
-    margin: 5,
-    marginBottom: 30,
-    justifyContent: "space-between",
-  },
-
   leftLink: {
     textAlign: "left",
     marginLeft: 10,
-  },
-
-  rightLink: {
-    textAlign: "right",
-    marginRight: 10,
+    marginVertical: 10,
   },
 });
 
