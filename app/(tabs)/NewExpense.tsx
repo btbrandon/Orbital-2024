@@ -21,6 +21,18 @@ const NewExpense = () => {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
+    if (parseFloat(itemPrice) <= 0) {
+      Alert.alert("Amount must be greater than 0");
+      return;
+    }
+    if (isNaN(parseFloat(itemPrice))) {
+      Alert.alert("Amount must be a number");
+      return;
+    }
+    if (category === null) {
+      Alert.alert("Please select the category");
+      return;
+    }
 
     // Perform the action to save the expense
     console.log({ category, itemName, itemPrice });
@@ -35,8 +47,6 @@ const NewExpense = () => {
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.header}>Add New Expense</Text>
-
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Category</Text>
           <RNPickerSelect
@@ -55,7 +65,7 @@ const NewExpense = () => {
             }}
           />
 
-          <Text style={styles.label}>Item Name</Text>
+          <Text style={styles.label}>Name</Text>
           <TextInput
             style={styles.input}
             onChangeText={(text) => setItemName(text)}
@@ -78,6 +88,9 @@ const NewExpense = () => {
               color="#ffffff"
             />
           </View>
+
+          {/* Homepage */}
+          <Link href="Homepage">Home</Link>
         </View>
       </View>
     </ScrollView>
@@ -119,7 +132,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 20,
-    margin: 10,
+    margin: 5,
     padding: 10,
     textAlign: "left",
     fontFamily: "Verdana",

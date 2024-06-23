@@ -15,8 +15,7 @@ const Homepage = () => {
   return (
     <ScrollView style={styles.container}>
       <View>
-        <Text style={styles.header}>Expenses</Text>
-        <View style={{ alignItems: "center" }}>
+        <View style={{ alignItems: "center", margin: 10 }}>
           <PieChart
             widthAndHeight={widthAndHeight}
             series={series}
@@ -35,12 +34,9 @@ const Homepage = () => {
           />
         </View>
         <View style={styles.buttonContainer}>
-          <Button title="New Expense" color="#FFFFFF" />
+          <Button title="others" color="#FFFFFF" />
         </View>
       </View>
-
-      {/* Login */}
-      <Link href="/">Login</Link>
     </ScrollView>
   );
 };

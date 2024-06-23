@@ -74,6 +74,12 @@ const Signup = () => {
         return;
       }
 
+      if (password.length < 6) {
+        setFormError("Password should at least be 6 characters long.");
+        Alert.alert(formError);
+        return;
+      }
+
       // If no errors and both email and username are unique, proceed with insertion
       const { data, error } = await supabase.auth.signUp({ email, password });
 
@@ -99,7 +105,7 @@ const Signup = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <ScrollView>
         <Image source={require("../assets/Logo.png")} style={styles.image} />
         <Text style={styles.header}>Sign Up</Text>
 
@@ -135,7 +141,7 @@ const Signup = () => {
         </View>
 
         <View style={styles.loginInputContainer}>
-          <Text style={styles.text}>Password</Text>
+          <Text style={styles.text}>Password (min 6 char.)</Text>
           <View style={styles.row}>
             <Image
               source={require("../assets/password.png")}
@@ -226,7 +232,7 @@ const styles = StyleSheet.create({
     height: 20,
     marginRight: 10,
   },
-  textInput: { fontSize: 15, fontFamily: "Verdana" },
+  textInput: { fontSize: 15, height: 20, width: 270 },
   linkContainer: {
     flexDirection: "row",
     margin: 5,

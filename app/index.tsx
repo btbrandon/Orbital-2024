@@ -41,12 +41,8 @@ const Login = () => {
         .single();
 
       if (userError) {
-        setFormError("Error retrieving user: " + userError.message);
-        return;
-      }
-
-      if (!userData) {
-        setFormError("No user found with that username.");
+        setFormError("No user found with that username");
+        Alert.alert("No user found with that username");
         return;
       }
 
@@ -63,7 +59,7 @@ const Login = () => {
 
       Alert.alert("Login Successful", `Welcome back, ${userData.username}!`);
       setFormError("");
-      router.replace("Homepage");
+      router.replace("./(tabs)/Homepage");
     } catch (error: any) {
       Alert.alert("Error", error.message || "An unexpected error occurred");
     }
@@ -100,7 +96,7 @@ const Login = () => {
               style={styles.icon}
             />
             <TextInput
-              secureTextEntry={true}
+              secureTextEntry
               placeholder="Password"
               style={styles.textInput}
               onChangeText={handlePasswordChange}
@@ -163,7 +159,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "white",
     textAlign: "left",
-    fontFamily: "Verdana",
     shadowOffset: { width: 3, height: 3 },
     shadowOpacity: 0.5,
   },
@@ -190,7 +185,7 @@ const styles = StyleSheet.create({
     height: 20,
     marginRight: 10,
   },
-  textInput: { fontSize: 15, fontFamily: "Verdana" },
+  textInput: { fontSize: 15, height: 20, width: 270 },
   linkContainer: {
     flexDirection: "row",
     margin: 5,
