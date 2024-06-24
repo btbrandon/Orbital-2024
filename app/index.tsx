@@ -57,7 +57,6 @@ const Login = () => {
         return;
       }
 
-      Alert.alert("Login Successful", `Welcome back, ${userData.username}!`);
       setFormError("");
       router.replace("./(tabs)/Homepage");
     } catch (error: any) {

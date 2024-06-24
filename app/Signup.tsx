@@ -87,7 +87,7 @@ const Signup = () => {
         throw error;
       }
 
-      const { data: credData, credError } = await supabase
+      const { data: credData, error: credError } = await supabase
         .from("user_credentials")
         .insert([{ email, username, password }]);
 

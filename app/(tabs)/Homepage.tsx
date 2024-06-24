@@ -1,43 +1,62 @@
-import { Link, router } from "expo-router";
-import React from "react";
-import { Text, View, StyleSheet, ScrollView, Button } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, View, StyleSheet } from "react-native";
 import PieChart from "react-native-pie-chart";
+import RecentTransactions from "../../components/RecentTransactions";
+import supabase from "../../config/supabaseClient";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Homepage = () => {
   const widthAndHeight = 250;
   const series = [123, 321, 123, 789, 537];
   const sliceColor = ["#ffadad", "#ffd6a5", "#fdffb6", "#caffbf", "#a0c4ff"];
+  const [loading, setLoading] = useState<boolean>(true);
+  const [username, setUsername] = useState("");
 
-  const handleNewExpense = async () => {
-    router.replace("NewExpense");
-  };
+  useEffect(() => {
+    const fetchUsername = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.log("Error fetching user:", error);
+        return;
+      }
+      const userEmail = data?.user?.email;
+
+      const { data: userData, error: userError } = await supabase
+        .from("user_credentials")
+        .select()
+        .eq("email", userEmail)
+        .select("username");
+
+      if (userError) {
+        console.error("Error fetching username:", userError.message);
+        return;
+      }
+
+      const newUsername = userData[0]?.username;
+      setUsername(newUsername);
+      setLoading(false);
+    };
+
+    fetchUsername();
+  }, []);
+
+  if (loading) {
+    return <Text style={styles.header}>Welcome back!</Text>;
+  }
 
   return (
-    <ScrollView style={styles.container}>
-      <View>
-        <View style={{ alignItems: "center", margin: 10 }}>
-          <PieChart
-            widthAndHeight={widthAndHeight}
-            series={series}
-            sliceColor={sliceColor}
-          />
-        </View>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>Welcome back {username}!</Text>
+      <View style={{ alignItems: "center", margin: 10, marginTop: 0 }}>
+        <PieChart
+          widthAndHeight={widthAndHeight}
+          series={series}
+          sliceColor={sliceColor}
+        />
       </View>
-
-      {/* Add Expense */}
-      <View style={styles.row}>
-        <View style={styles.buttonContainer}>
-          <Button
-            title="New Expense"
-            color="#FFFFFF"
-            onPress={handleNewExpense}
-          />
-        </View>
-        <View style={styles.buttonContainer}>
-          <Button title="others" color="#FFFFFF" />
-        </View>
-      </View>
-    </ScrollView>
+      <Text style={styles.header2}>Recent Transactions</Text>
+      <RecentTransactions />
+    </SafeAreaView>
   );
 };
 
@@ -49,28 +68,16 @@ const styles = StyleSheet.create({
   header: {
     fontWeight: "bold",
     fontFamily: "Verdana",
-    fontSize: 35,
+    fontSize: 20,
     height: 50,
-    textAlign: "center",
-    justifyContent: "center",
-    margin: 10,
+    alignSelf: "center",
   },
-  buttonContainer: {
-    backgroundColor: "#274653",
-    padding: 5,
-    justifyContent: "center",
-    fontWeight: "bold",
+  header2: {
     fontFamily: "Verdana",
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 10,
-    marginRight: 10,
-    borderRadius: 10,
-  },
-  row: {
-    flexDirection: "row",
-    alignContent: "center",
-    padding: 5,
+    fontSize: 13,
+    fontWeight: "bold",
+    marginHorizontal: 15,
+    marginTop: 5,
   },
 });
 
