@@ -39,11 +39,37 @@ const Analysis = () => {
     fetchUsername();
   }, []);
 
+  const [transaction, setTransactions] = useState<any[]>([]);
   const [foodAmount, setFoodAmount] = useState<number>();
   const [transportAmount, setTransportAmount] = useState<number>();
   const [clothingAmount, setClothingAmount] = useState<number>();
   const [otherAmount, setOtherAmount] = useState<number>();
   const [dailyTotal, setDailyTotal] = useState<number>();
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("expenses")
+        .select()
+        .eq("user_id", userId);
+
+      if (error) {
+        console.log("Unexpected error:" + error);
+        setLoading(false);
+        return;
+      }
+
+      setTransactions(data);
+      setLoading(false);
+    };
+
+    if (userId) {
+      fetchTransactions();
+    }
+
+    const fetchByCategories = async () => {};
+  });
 
   // const foodAmount = 150;
   // const transportAmount = 75;
