@@ -9,13 +9,22 @@ import {
 } from "react-native-paper";
 import supabase from "../config/supabaseClient";
 import { format } from "date-fns";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Import the icon library
+
+const categoryIcons: { [key: string]: string } = {
+  Food: "food",
+  Transport: "car",
+  Clothing: "tshirt-crew",
+  Shopping: "cart",
+  Others: "dots-horizontal",
+};
 
 const categoryColors: { [key: string]: string } = {
-  Food: "#FF6B6B",
-  Transport: "#4ECDC4",
-  Clothing: "#FFE66D",
-  Shopping: "#6BCB77",
-  Others: "#C44536",
+  Food: "#D6F6DD",
+  Transport: "#ACECF7",
+  Clothing: "#DAC4F7",
+  Shopping: "#F4989C",
+  Others: "#EBD2B4",
 };
 
 const RecentExpenses = () => {
@@ -61,7 +70,7 @@ const RecentExpenses = () => {
       .eq("user_id", userId)
       .eq("date", today)
       .order("time", { ascending: false })
-      .limit(3);
+      .limit(5);
 
     if (error) {
       console.log(userId);
@@ -91,20 +100,30 @@ const RecentExpenses = () => {
         { backgroundColor: categoryColors[item.category] || "#FFFFFF" },
       ]}
     >
-      <Card.Content>
-        <View style={styles.cardContent}>
-          <View style={styles.cardLeft}>
-            <Title style={styles.itemName}>{item.itemName}</Title>
-            <Paragraph style={styles.itemDetails}>
-              Type: {item.category}
-            </Paragraph>
-            <Paragraph style={styles.itemDetails}>
-              Time: {item.time.substring(0, 5)}
-            </Paragraph>
-          </View>
-          <View style={styles.cardRight}>
-            <Text style={styles.priceText}>-${item.itemPrice.toFixed(2)}</Text>
-          </View>
+      <Card.Content style={styles.cardContent}>
+        <View style={styles.iconContainer}>
+          <Icon
+            name={categoryIcons[item.category] || "dots-horizontal"}
+            size={24}
+          />
+        </View>
+        <View style={styles.cardLeft}>
+          <Title style={styles.itemName}>{item.itemName}</Title>
+          <Paragraph style={styles.itemDetails}>
+            {item.time.substring(0, 5)}
+          </Paragraph>
+        </View>
+        <View style={styles.cardRight}>
+          <Text
+            style={[
+              styles.priceText,
+              { color: item.itemPrice < 0 ? "red" : "red" }, //to do
+            ]}
+          >
+            {item.itemPrice < 0
+              ? `-$${Math.abs(item.itemPrice).toFixed(2)}`
+              : `-$${item.itemPrice.toFixed(2)}`}
+          </Text>
         </View>
       </Card.Content>
     </Card>
@@ -132,17 +151,25 @@ const RecentExpenses = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 4,
     backgroundColor: "white",
     flex: 1,
   },
   card: {
-    marginBottom: 10,
+    marginBottom: 6,
+    padding: 0,
+    height: 80,
   },
   cardContent: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  iconContainer: {
+    paddingRight: 10,
+    alignSelf: "center",
   },
   cardLeft: {
     flex: 1,
@@ -152,16 +179,18 @@ const styles = StyleSheet.create({
   },
   itemName: {
     color: "#000000",
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: "bold",
+    paddingTop: 3,
   },
   itemDetails: {
     color: "#000000",
+    fontSize: 12,
   },
   priceText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
-    color: "#000000F",
+    paddingBottom: 3,
   },
 });
 

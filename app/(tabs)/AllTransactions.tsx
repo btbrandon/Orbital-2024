@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, FlatList, RefreshControl } from "react-native";
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  RefreshControl,
+  Platform,
+} from "react-native";
 import {
   IconButton,
   Card,
@@ -11,13 +17,22 @@ import {
 import supabase from "../../config/supabaseClient";
 import { format, subMonths, addMonths } from "date-fns";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Import the icon library
+
+const categoryIcons: { [key: string]: string } = {
+  Food: "food",
+  Transport: "car",
+  Clothing: "tshirt-crew",
+  Shopping: "cart",
+  Others: "dots-horizontal",
+};
 
 const categoryColors: { [key: string]: string } = {
-  Food: "#FF6B6B",
-  Transport: "#4ECDC4",
-  Clothing: "#FFE66D",
-  Shopping: "#6BCB77",
-  Others: "#C44536",
+  Food: "#D6F6DD",
+  Transport: "#ACECF7",
+  Clothing: "#DAC4F7",
+  Shopping: "#F4989C",
+  Others: "#EBD2B4",
 };
 
 const TransactionScreen = () => {
@@ -105,18 +120,21 @@ const TransactionScreen = () => {
     <Card
       style={[
         styles.card,
-        { backgroundColor: categoryColors[item.category] || "#FFFFFF" },
+        { backgroundColor: categoryColors[item.category] || "#EBD2B4" },
       ]}
     >
       <Card.Content>
         <View style={styles.cardContent}>
+          <View style={styles.iconContainer}>
+            <Icon
+              name={categoryIcons[item.category] || "dots-horizontal"}
+              size={24}
+            />
+          </View>
           <View style={styles.cardLeft}>
             <Title style={styles.itemName}>{item.itemName}</Title>
             <Paragraph style={styles.itemDetails}>
-              Type: {item.category}
-            </Paragraph>
-            <Paragraph style={styles.itemDetails}>
-              Time: {item.time.substring(0, 5)}
+              Date: {item.date.substring(5, 15)}
             </Paragraph>
           </View>
           <View style={styles.cardRight}>
@@ -177,30 +195,38 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 10,
+    height: 80,
   },
   cardContent: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+  },
+  iconContainer: {
+    paddingRight: 10,
+    paddingBottom: 16,
   },
   cardLeft: {
     flex: 1,
+    justifyContent: "center",
   },
   cardRight: {
-    alignItems: "flex-end",
+    justifyContent: "center",
   },
   itemName: {
     color: "#000000",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
   },
   itemDetails: {
     color: "#000000",
+    fontSize: 14,
+    paddingBottom: 10,
   },
   priceText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
-    color: "#000000F",
+    color: "#000000",
+    paddingBottom: 12,
   },
 });
 

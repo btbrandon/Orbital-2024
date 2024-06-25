@@ -8,8 +8,6 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
 } from "react-native";
 import { Link, router } from "expo-router";
 import supabase from "../config/supabaseClient";
@@ -118,6 +116,7 @@ const Signup = () => {
             />
             <TextInput
               placeholder="Email"
+              placeholderTextColor="white"
               style={styles.textInput}
               keyboardType="email-address"
               onChangeText={handleEmailChange}
@@ -134,6 +133,7 @@ const Signup = () => {
             />
             <TextInput
               placeholder="Username"
+              placeholderTextColor="white"
               style={styles.textInput}
               onChangeText={handleUsernameChange}
             />
@@ -150,6 +150,7 @@ const Signup = () => {
             <TextInput
               secureTextEntry={true}
               placeholder="Password"
+              placeholderTextColor="white"
               style={styles.textInput}
               onChangeText={handlePasswordChange}
             />

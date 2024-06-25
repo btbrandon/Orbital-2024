@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const NewExpense = () => {
   const [categoryOptions] = useState([
-    { label: "Foods", value: "Foods" },
+    { label: "Food", value: "Food" },
     { label: "Transport", value: "Transport" },
     { label: "Clothing", value: "Clothing" },
     { label: "Others", value: "Others" },
@@ -113,69 +113,72 @@ const NewExpense = () => {
   };
 
   return (
-    <PaperProvider>
-      <ScrollView style={styles.container}>
-        <Text style={styles.label}>Category</Text>
-        <RNPickerSelect
-          onValueChange={(value) => setCategory(value)}
-          items={categoryOptions}
-          placeholder={{
-            label: "Select a category",
-            value: null,
-          }}
-          style={{
-            ...pickerSelectStyles,
-            inputAndroid: {
-              ...pickerSelectStyles.inputAndroid,
-              marginBottom: 10, // Adjust marginBottom to match TextInput
-            },
-            inputIOS: {
-              ...pickerSelectStyles.inputIOS,
-              marginBottom: 10, // Adjust marginBottom to match TextInput
-            },
-          }}
-          value={category}
-        />
+    <SafeAreaView style={styles.container}>
+      <PaperProvider>
+        <ScrollView>
+          <Text style={styles.label}>Category</Text>
+          <RNPickerSelect
+            onValueChange={(value) => setCategory(value)}
+            items={categoryOptions}
+            placeholder={{
+              label: "Select a category",
+              color: "black",
+              value: null,
+            }}
+            style={{
+              ...pickerSelectStyles,
+              inputAndroid: {
+                ...pickerSelectStyles.inputAndroid,
+                marginBottom: 10,
+              },
+              inputIOS: {
+                ...pickerSelectStyles.inputIOS,
+                marginBottom: 10,
+              },
+            }}
+            value={category}
+          />
 
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          label="Name"
-          style={styles.input}
-          onChangeText={(text) => setItemName(text)}
-          value={itemName}
-          placeholder="Enter item name"
-        />
+          <Text style={styles.label}>Name</Text>
+          <TextInput
+            label="Name"
+            style={styles.input}
+            onChangeText={(text) => setItemName(text)}
+            value={itemName}
+            placeholder="Enter item name"
+          />
 
-        <Text style={styles.label}>Price</Text>
-        <TextInput
-          label="Price"
-          style={styles.input}
-          onChangeText={(text) => setItemPrice(text)}
-          value={itemPrice}
-          placeholder="Enter price"
-          keyboardType="numeric"
-        />
+          <Text style={styles.label}>Price</Text>
+          <TextInput
+            label="Price"
+            style={styles.input}
+            onChangeText={(text) => setItemPrice(text)}
+            value={itemPrice}
+            placeholder="Enter price"
+            keyboardType="numeric"
+          />
 
-        <View style={styles.buttonContainer}>
-          <Button
-            mode="contained"
-            style={styles.button}
-            onPress={handleAddExpense}
-            color="#ffffff"
+          <View style={styles.buttonContainer}>
+            <Button
+              mode="contained"
+              style={styles.button}
+              onPress={handleAddExpense}
+              color="#ffffff"
+            >
+              Add Item
+            </Button>
+          </View>
+
+          <Snackbar
+            visible={snackbarVisible}
+            onDismiss={() => setSnackbarVisible(false)}
+            duration={3000}
           >
-            Add Item
-          </Button>
-        </View>
-
-        <Snackbar
-          visible={snackbarVisible}
-          onDismiss={() => setSnackbarVisible(false)}
-          duration={3000}
-        >
-          {snackbarMessage}
-        </Snackbar>
-      </ScrollView>
-    </PaperProvider>
+            {snackbarMessage}
+          </Snackbar>
+        </ScrollView>
+      </PaperProvider>
+    </SafeAreaView>
   );
 };
 
@@ -204,7 +207,6 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     marginBottom: 10,
   },
-  // Define a style for the Button component
   button: {
     backgroundColor: "#274653",
     padding: 5,
@@ -228,7 +230,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "white",
     marginBottom: 10,
-    marginHorizontal: 10,
+    width: 335,
   },
   inputAndroid: {
     fontSize: 16,

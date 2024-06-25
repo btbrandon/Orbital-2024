@@ -10,18 +10,20 @@ const TabsLayout = () => {
         tabBarInactiveTintColor: "#000",
         tabBarActiveBackgroundColor: "white",
         tabBarLabelStyle: {
-          fontSize: 14,
+          fontSize: 10,
         },
         tabBarStyle: {
-          height: 60,
-          paddingBottom: 10,
-          paddingTop: 10,
+          height: 80,
+          paddingBottom: 30,
+          paddingTop: 0,
+          marginTop: 5,
           position: "absolute",
         },
       }}
     >
       <Tabs.Screen name="Homepage" options={{ title: "Home" }} />
       <Tabs.Screen name="NewExpense" options={{ title: "New Expense" }} />
+      <Tabs.Screen name="Analysis" options={{ title: "Analysis" }} />
       <Tabs.Screen name="AllTransactions" options={{ title: "History" }} />
       <Tabs.Screen name="Settings" />
     </Tabs>

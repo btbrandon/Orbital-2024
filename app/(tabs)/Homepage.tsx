@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
-import PieChart from "react-native-pie-chart";
+import { Text, View, StyleSheet, Platform } from "react-native";
 import RecentTransactions from "../../components/RecentTransactions";
 import supabase from "../../config/supabaseClient";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { format } from "date-fns/format";
 
 const Homepage = () => {
-  const widthAndHeight = 250;
-  const series = [123, 321, 123, 789, 537];
-  const sliceColor = ["#ffadad", "#ffd6a5", "#fdffb6", "#caffbf", "#a0c4ff"];
   const [loading, setLoading] = useState<boolean>(true);
   const [username, setUsername] = useState("");
+  const [userId, setUserId] = useState<number>();
+  const [total, setTotal] = useState<number>(0);
 
   useEffect(() => {
-    const fetchUsername = async () => {
+    const fetchUsernameId = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error) {
         console.log("Error fetching user:", error);
@@ -34,11 +33,47 @@ const Homepage = () => {
 
       const newUsername = userData[0]?.username;
       setUsername(newUsername);
+
+      const { data: IDdata, error: IDerror } = await supabase
+        .from("user_credentials")
+        .select()
+        .eq("email", userEmail)
+        .select("user_id");
+
+      if (IDerror) {
+        console.error("Error fetching username:", IDerror.message);
+        return;
+      }
+
+      const newUserId = IDdata[0]?.user_id;
+      setUserId(newUserId);
       setLoading(false);
     };
-
-    fetchUsername();
+    fetchUsernameId();
   }, []);
+
+  useEffect(() => {
+    const fetchTotal = async () => {
+      const today = new Date();
+      const formattedDate = format(today, "yyyy-MM");
+      const { data, error } = await supabase
+        .from("expenses")
+        .select("itemPrice")
+        .eq("user_id", userId)
+        .ilike("date", `${formattedDate}%`);
+
+      if (error) {
+        console.error("Error fetching transactions:", error.message);
+        return;
+      }
+
+      const total = data.reduce((acc, expense) => acc + expense.itemPrice, 0);
+      setTotal(total);
+    };
+    if (userId) {
+      fetchTotal();
+    }
+  });
 
   if (loading) {
     return <Text style={styles.header}>Welcome back!</Text>;
@@ -47,12 +82,10 @@ const Homepage = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Welcome back {username}!</Text>
-      <View style={{ alignItems: "center", margin: 10, marginTop: 0 }}>
-        <PieChart
-          widthAndHeight={widthAndHeight}
-          series={series}
-          sliceColor={sliceColor}
-        />
+      <View style={styles.expenseContainer}>
+        <Text style={styles.header2}>Monthly Total</Text>
+        <View style={styles.separator}></View>
+        <Text style={styles.text}>${total.toFixed(2)}</Text>
       </View>
       <Text style={styles.header2}>Recent Transactions</Text>
       <RecentTransactions />
@@ -71,13 +104,40 @@ const styles = StyleSheet.create({
     fontSize: 20,
     height: 50,
     alignSelf: "center",
+    marginTop: 10,
   },
   header2: {
     fontFamily: "Verdana",
-    fontSize: 13,
+    fontSize: 17,
     fontWeight: "bold",
     marginHorizontal: 15,
     marginTop: 5,
+    alignSelf: "center",
+  },
+  expenseContainer: {
+    backgroundColor: "#C7C8CC",
+    padding: 10,
+    justifyContent: "flex-start",
+    fontWeight: "bold",
+    fontFamily: "Verdana",
+    marginBottom: 10,
+    marginHorizontal: 10,
+    borderRadius: 10,
+    alignSelf: "center",
+  },
+  text: {
+    paddingHorizontal: 5,
+    fontSize: 17,
+    fontFamily: "Verdana",
+    fontWeight: "bold",
+    alignSelf: "flex-end",
+    margin: 10,
+  },
+  separator: {
+    height: 2,
+    backgroundColor: "#808080",
+    marginVertical: 2,
+    width: "100%",
   },
 });
 
