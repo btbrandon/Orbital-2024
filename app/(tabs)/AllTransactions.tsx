@@ -28,11 +28,11 @@ const categoryIcons: { [key: string]: string } = {
 };
 
 const categoryColors: { [key: string]: string } = {
-  Food: "#D6F6DD",
-  Transport: "#ACECF7",
-  Clothing: "#DAC4F7",
-  Shopping: "#F4989C",
-  Others: "#EBD2B4",
+  Food: "white",
+  Transport: "white",
+  Clothing: "white",
+  Shopping: "white",
+  Others: "white",
 };
 
 const TransactionScreen = () => {
@@ -126,9 +126,10 @@ const TransactionScreen = () => {
       <Card.Content>
         <View style={styles.cardContent}>
           <View style={styles.iconContainer}>
-            <Icon
-              name={categoryIcons[item.category] || "dots-horizontal"}
-              size={24}
+          <Icon
+            name={categoryIcons[item.category] || "dots-horizontal"}
+            size={40}
+            color="#839dad"
             />
           </View>
           <View style={styles.cardLeft}>
@@ -138,7 +139,16 @@ const TransactionScreen = () => {
             </Paragraph>
           </View>
           <View style={styles.cardRight}>
-            <Text style={styles.priceText}>-${item.itemPrice.toFixed(2)}</Text>
+          <Text
+            style={[
+              styles.priceText,
+              { color: item.itemPrice < 0 ? "#d32c47" : "#d32c47" }, //to do
+            ]}
+          >
+            {item.itemPrice < 0
+              ? `-$${Math.abs(item.itemPrice).toFixed(2)}`
+              : `-$${item.itemPrice.toFixed(2)}`}
+          </Text>
           </View>
         </View>
       </Card.Content>
@@ -159,11 +169,11 @@ const TransactionScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.navigation}>
-        <IconButton icon="chevron-left" size={30} onPress={handlePrevMonth} />
+        <IconButton icon="chevron-left" size={30} onPress={handlePrevMonth} iconColor="white" />
         <Text style={styles.monthLabel}>
           {format(currentMonth, "MMMM yyyy")}
         </Text>
-        <IconButton icon="chevron-right" size={30} onPress={handleNextMonth} />
+        <IconButton icon="chevron-right" size={30} onPress={handleNextMonth} iconColor="white" />
       </View>
       <FlatList
         data={filteredTransactions}
@@ -180,7 +190,7 @@ const TransactionScreen = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: "white",
+    backgroundColor: "#284452",
     flex: 1,
   },
   navigation: {
@@ -188,13 +198,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
+    color: "white"
   },
   monthLabel: {
-    fontSize: 18,
+    fontSize: 28,
     fontWeight: "bold",
+    color: "#ffffff",
   },
   card: {
-    marginBottom: 10,
+    marginBottom: 6,
     height: 80,
   },
   cardContent: {

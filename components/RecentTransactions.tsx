@@ -20,11 +20,11 @@ const categoryIcons: { [key: string]: string } = {
 };
 
 const categoryColors: { [key: string]: string } = {
-  Food: "#D6F6DD",
-  Transport: "#ACECF7",
-  Clothing: "#DAC4F7",
-  Shopping: "#F4989C",
-  Others: "#EBD2B4",
+  Food: "white",
+  Transport: "white",
+  Clothing: "white",
+  Shopping: "white",
+  Others: "white",
 };
 
 const RecentExpenses = () => {
@@ -104,7 +104,8 @@ const RecentExpenses = () => {
         <View style={styles.iconContainer}>
           <Icon
             name={categoryIcons[item.category] || "dots-horizontal"}
-            size={24}
+            size={40}
+            color="#839dad"
           />
         </View>
         <View style={styles.cardLeft}>
@@ -117,7 +118,7 @@ const RecentExpenses = () => {
           <Text
             style={[
               styles.priceText,
-              { color: item.itemPrice < 0 ? "red" : "red" }, //to do
+              { color: item.itemPrice < 0 ? "#d32c47" : "#d32c47" }, //to do
             ]}
           >
             {item.itemPrice < 0
@@ -152,13 +153,13 @@ const RecentExpenses = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 4,
-    backgroundColor: "white",
+    backgroundColor: "#284452",
     flex: 1,
   },
   card: {
     marginBottom: 6,
-    padding: 0,
     height: 80,
+
   },
   cardContent: {
     flexDirection: "row",
@@ -166,10 +167,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 10,
     paddingVertical: 5,
+    
   },
   iconContainer: {
-    paddingRight: 10,
+    paddingLeft: 10,
     alignSelf: "center",
+
   },
   cardLeft: {
     flex: 1,
@@ -178,19 +181,22 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   itemName: {
-    color: "#000000",
+    color: "black",
     fontSize: 15,
     fontWeight: "bold",
-    paddingTop: 3,
+    paddingLeft: 15
   },
   itemDetails: {
-    color: "#000000",
+    color: "black",
     fontSize: 12,
+    paddingLeft: 15
   },
   priceText: {
     fontSize: 16,
     fontWeight: "bold",
-    paddingBottom: 3,
+    alignSelf: "center",
+    paddingRight: 10,
+
   },
 });
 

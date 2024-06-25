@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, Platform } from "react-native";
+import { Text, View, StyleSheet, Platform, ActivityIndicator } from "react-native";
 import RecentTransactions from "../../components/RecentTransactions";
 import supabase from "../../config/supabaseClient";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -76,18 +76,20 @@ const Homepage = () => {
   });
 
   if (loading) {
-    return <Text style={styles.header}>Welcome back!</Text>;
+    return (
+      <ActivityIndicator animating={true} style={{ alignSelf: "center" }} />
+    );
   }
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Welcome back {username}!</Text>
+      <Text style={styles.header}>Welcome back, {username}!</Text>
       <View style={styles.expenseContainer}>
-        <Text style={styles.header2}>Monthly Total</Text>
+        <Text style={styles.header2}>This Month's Expenses</Text>
         <View style={styles.separator}></View>
         <Text style={styles.text}>${total.toFixed(2)}</Text>
       </View>
-      <Text style={styles.header2}>Recent Transactions</Text>
+      <Text style={{ ...styles.header3, alignSelf: "flex-start" }}>Recent Transactions</Text>
       <RecentTransactions />
     </SafeAreaView>
   );
@@ -96,27 +98,40 @@ const Homepage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#284452",
   },
   header: {
     fontWeight: "bold",
-    fontFamily: "Verdana",
-    fontSize: 20,
+    fontFamily: "Calibri",
+    fontSize: 25,
     height: 50,
     alignSelf: "center",
     marginTop: 10,
+    color: "white"
   },
   header2: {
-    fontFamily: "Verdana",
-    fontSize: 17,
+    fontFamily: "Calibri",
+    fontSize: 20,
     fontWeight: "bold",
     marginHorizontal: 15,
     marginTop: 5,
     alignSelf: "center",
+    color: "white",
+    paddingTop: 5
+  },
+  header3: {
+    fontFamily: "Calibri",
+    fontSize: 20,
+    fontWeight: "bold",
+    marginHorizontal: 15,
+    marginTop: 5,
+    alignSelf: "flex-start",
+    color: "white",
+    paddingTop: 30
   },
   expenseContainer: {
-    backgroundColor: "#C7C8CC",
-    padding: 10,
+    backgroundColor: "#121E26",
+    padding: 12,
     justifyContent: "flex-start",
     fontWeight: "bold",
     fontFamily: "Verdana",
@@ -127,15 +142,14 @@ const styles = StyleSheet.create({
   },
   text: {
     paddingHorizontal: 5,
-    fontSize: 17,
-    fontFamily: "Verdana",
+    fontSize: 45,
+    fontFamily: "CALIBRI",
     fontWeight: "bold",
-    alignSelf: "flex-end",
+    paddingLeft: 18,
     margin: 10,
-  },
+    color: "white",
+    },
   separator: {
-    height: 2,
-    backgroundColor: "#808080",
     marginVertical: 2,
     width: "100%",
   },

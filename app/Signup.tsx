@@ -3,16 +3,19 @@ import {
   Text,
   TextInput,
   View,
-  Button,
   Image,
   StyleSheet,
   Alert,
-  ScrollView,
+  TouchableOpacity,
+  ImageBackground,
+  StatusBar,
 } from "react-native";
 import { Link, router } from "expo-router";
 import supabase from "../config/supabaseClient";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Signup = () => {
+  StatusBar.setBarStyle("light-content", true);
   const [email, setEmail] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -102,14 +105,23 @@ const Signup = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <Image source={require("../assets/Logo.png")} style={styles.image} />
+    <SafeAreaView style={styles.container}>
+      <ImageBackground
+        source={require("../assets/background.jpg")} // Replace with your background image path
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <View style={styles.content}>
+        <Image
+            source={require("../assets/Logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
         <Text style={styles.header}>Sign Up</Text>
 
-        <View style={styles.loginInputContainer}>
-          <Text style={styles.text}>Email</Text>
-          <View style={styles.row}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Email</Text>
+          <View style={styles.inputRow}>
             <Image
               source={require("../assets/email.webp")}
               style={styles.icon}
@@ -117,16 +129,16 @@ const Signup = () => {
             <TextInput
               placeholder="Email"
               placeholderTextColor="white"
-              style={styles.textInput}
+              style={styles.input}
               keyboardType="email-address"
               onChangeText={handleEmailChange}
             />
           </View>
         </View>
 
-        <View style={styles.loginInputContainer}>
-          <Text style={styles.text}>Username</Text>
-          <View style={styles.row}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Username</Text>
+          <View style={styles.inputRow}>
             <Image
               source={require("../assets/username.png")}
               style={styles.icon}
@@ -134,15 +146,15 @@ const Signup = () => {
             <TextInput
               placeholder="Username"
               placeholderTextColor="white"
-              style={styles.textInput}
+              style={styles.input}
               onChangeText={handleUsernameChange}
             />
           </View>
         </View>
 
-        <View style={styles.loginInputContainer}>
-          <Text style={styles.text}>Password (min 6 char.)</Text>
-          <View style={styles.row}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Password (min 6 char.)</Text>
+          <View style={styles.inputRow}>
             <Image
               source={require("../assets/password.png")}
               style={styles.icon}
@@ -151,7 +163,7 @@ const Signup = () => {
               secureTextEntry={true}
               placeholder="Password"
               placeholderTextColor="white"
-              style={styles.textInput}
+              style={styles.input}
               onChangeText={handlePasswordChange}
             />
           </View>
@@ -159,96 +171,131 @@ const Signup = () => {
 
         <View style={styles.linkContainer}>
           <Link href="/" style={styles.leftLink}>
-            Already have an account?
+            <Text style={styles.linkText}>Already have an account?</Text>
           </Link>
         </View>
 
-        <View style={styles.buttonContainer}>
-          <Button title="SIGN UP" onPress={handleSignup} color="#FFFFFF" />
+        {/* Error Message */}
+        {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
+
+        <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={handleSignup}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.buttonText}>SIGN UP</Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
-    </View>
+      </ImageBackground>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
-    // #DDA0DD
-  },
-  header: {
-    fontWeight: "bold",
-    fontFamily: "Verdana",
-    fontSize: 35,
-    height: 50,
-    textAlign: "center",
-    justifyContent: "center",
-  },
-  buttonContainer: {
-    backgroundColor: "#274653",
-    padding: 10,
-    justifyContent: "center",
-    fontWeight: "bold",
-    fontFamily: "Verdana",
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 10,
-    marginRight: 10,
-    borderRadius: 15,
-  },
-  loginInputContainer: {
-    backgroundColor: "white",
-    fontSize: 20,
-    margin: 10,
-    padding: 10,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: "white",
-    textAlign: "left",
-    fontFamily: "Verdana",
-    shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 0.5,
-  },
-  row: {
-    flexDirection: "row",
-    margin: 5,
+    backgroundColor: "#121E26",
   },
   text: {
-    marginLeft: 10,
-    backgroundColor: "white",
+    fontSize: 16,
+    color: "#FFFFFF",
+    fontFamily: "Verdana",
+    margin: 10,
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover", // or stretch
+  },
+  content: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 30,
+  },
+  header: {
+    fontSize: 30,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    fontFamily: "Calibri",
+    color: "#FFFFFF",
+  },
+  inputContainer: {
+    width: "100%",
+    marginBottom: 20,
+  },
+  label: {
     fontSize: 18,
+    marginBottom: 10,
     textAlign: "left",
+    color: "#FFFFFF",
     fontFamily: "Verdana",
   },
-  image: {
-    width: 100,
-    height: 100,
-    margin: 30,
-    marginTop: 45,
-    alignSelf: "center",
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    color: "#FFFFFF",
+    fontFamily: "Verdana",
   },
   icon: {
     width: 20,
     height: 20,
     marginRight: 10,
+    tintColor: "#FFFFFF",
   },
-  textInput: { fontSize: 15, height: 20, width: 270 },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: "#FFFFFF",
+    fontFamily: "Verdana",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+    textAlign: "center",
+    fontSize: 16,
+    fontFamily: "Verdana",
+  },
   linkContainer: {
     flexDirection: "row",
-    margin: 5,
-    marginBottom: 30,
     justifyContent: "space-between",
+    marginBottom: 30,
+    width: "100%",
   },
   leftLink: {
-    textAlign: "left",
-    marginLeft: 10,
-    marginVertical: 10,
+    marginRight: "auto",
   },
   rightLink: {
-    textAlign: "right",
-    marginRight: 10,
-    marginVertical: 10,
+    marginLeft: "auto",
+  },
+  linkText: {
+    fontSize: 12,
+    color: "#FFFFFF",
+    fontFamily: "Verdana",
+  },
+  buttonContainer: {
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "#000000",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    fontFamily: "Verdana",
   },
 });
 

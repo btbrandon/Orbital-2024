@@ -25,10 +25,10 @@ const Settings = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#284452",
   },
   buttonContainer: {
-    backgroundColor: "#274653",
+    backgroundColor: "#121E26",
     padding: 5,
     justifyContent: "center",
     fontWeight: "bold",

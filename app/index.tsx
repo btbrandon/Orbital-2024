@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   View,
-  Button,
   Image,
   StyleSheet,
   Alert,
@@ -69,7 +68,7 @@ const Login = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
-        source={require("../assets/background.jpg")} // Replace with your background image path
+        source={require("../assets/background.jpg")}
         style={styles.backgroundImage}
         resizeMode="cover"
       >
@@ -79,7 +78,7 @@ const Login = () => {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.header}>Login</Text>
+          <Text style={styles.header}>Piggify</Text>
 
           {/* Username */}
           <View style={styles.inputContainer}>
@@ -92,7 +91,7 @@ const Login = () => {
               />
               <TextInput
                 placeholder="Username"
-                placeholderTextColor="white"
+                placeholderTextColor="#afc1cd"
                 style={styles.input}
                 onChangeText={handleUsernameChange}
               />
@@ -111,33 +110,35 @@ const Login = () => {
               <TextInput
                 secureTextEntry
                 placeholder="Password"
-                placeholderTextColor="white"
+                placeholderTextColor="#afc1cd"
                 style={styles.input}
                 onChangeText={handlePasswordChange}
               />
             </View>
           </View>
 
-          {/* Error Message */}
-          {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
+          
 
           {/* Forgot password and Sign up links */}
           <View style={styles.linkContainer}>
             <Link href="Signup" style={styles.leftLink}>
               <Text style={styles.linkText}>Don't have an account?</Text>
             </Link>
-            <Link href="ForgotPassword" style={styles.rightLink}>
+            {/* <Link href="ForgotPassword" style={styles.rightLink}>
               <Text style={styles.linkText}>Forgot your password?</Text>
-            </Link>
+            </Link> */}
           </View>
+
+          {/* Error Message */}
+          {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
 
           {/* Login Button */}
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={handleLogin}
-            activeOpacity={0.8}
+            activeOpacity={0.4}
           >
-            <Text style={styles.buttonText}>LOGIN</Text>
+            <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
@@ -150,6 +151,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#121E26",
   },
+  // text: {
+  //   fontSize: 32,
+  //   color: "#FFFFFF",
+  //   fontFamily: "Calibri",
+  // },
+
   backgroundImage: {
     flex: 1,
     resizeMode: "cover", // or stretch
@@ -166,11 +173,11 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   header: {
-    fontSize: 40,
+    fontSize: 50,
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
     color: "#FFFFFF",
   },
   inputContainer: {
@@ -182,6 +189,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "left",
     color: "#FFFFFF",
+    fontFamily: "Verdana",
   },
   inputRow: {
     flexDirection: "row",
@@ -192,6 +200,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     color: "#FFFFFF",
+    fontFamily: "Verdana",
   },
   icon: {
     width: 20,
@@ -203,12 +212,14 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: "#FFFFFF",
+    fontFamily: "Verdana",
   },
   errorText: {
     color: "red",
     marginBottom: 10,
     textAlign: "center",
     fontSize: 16,
+    fontFamily: "Verdana",
   },
   linkContainer: {
     flexDirection: "row",
@@ -223,8 +234,9 @@ const styles = StyleSheet.create({
     marginLeft: "auto",
   },
   linkText: {
-    fontSize: 14,
+    fontSize: 12,
     color: "#FFFFFF",
+    fontFamily: "Verdana",
   },
   buttonContainer: {
     backgroundColor: "#FFFFFF",
@@ -238,6 +250,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
+    fontFamily: "Calibri",
   },
 });
 

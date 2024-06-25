@@ -1,111 +1,192 @@
-import React from "react";
-import { Text, TextInput, View, Button, Image, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { Text, TextInput, View, Image, StyleSheet, SafeAreaView, ImageBackground, TouchableOpacity, StatusBar, Alert } from "react-native";
 import { Link } from "expo-router";
+import supabase from "../config/supabaseClient";
 
-const ForgotPassword = () => {
+  const ForgotPassword = () => {
+  StatusBar.setBarStyle("light-content", true);
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState('');
+
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+  }
+
+  const handleForgotPassword = async () => {
+    console.log("Forgot Password button pressed");
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+      console.log('Data:', data);
+      console.log('Error:', error);
+      console.log(email);
+      if (error) {
+        setMessage('Error: ' + error.message);
+        return;
+      } else {
+        Alert.alert('Password reset link has been sent to your email.');
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Image source={require("../assets/Logo.png")} style={styles.image} />
-      <Text style={styles.header}> Reset Password</Text>
-      <Text style={styles.information}>
-        The link to reset your password will be sent to your email.
-      </Text>
-      <View style={styles.loginInputContainer}>
-        <Text style={styles.text}>Email</Text>
-        <View style={styles.row}>
-          <Image source={require("../assets/email.webp")} style={styles.icon} />
-          <TextInput placeholder="Email" style={styles.textInput} />
+    <SafeAreaView style={styles.container}>
+      <ImageBackground
+        source={require("../assets/background.jpg")}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <View style={styles.content}>
+          <Image
+            source={require("../assets/Logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.header}>Password Recovery</Text>
+
+          <Text style={styles.text}>
+            The link to reset your password will be sent to your email.
+          </Text>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Email</Text>
+            <View style={styles.inputRow}>
+              <Image source={require("../assets/email.webp")} style={styles.icon} />
+              <TextInput
+              placeholder="Email"
+              placeholderTextColor="white"
+              style={styles.input}
+              keyboardType="email-address"
+              onChangeText={handleEmailChange}
+            />
+            </View>
+          </View>
+
+          <Link href="/" style={styles.leftLink}>
+            <Text style={styles.linkText}>Back to Login</Text>
+          </Link>
+
+          <TouchableOpacity
+                style={styles.buttonContainer}
+                onPress={handleForgotPassword}
+                activeOpacity={0.8}
+              >
+            <Text style={styles.buttonText}>Send Reset Link</Text>
+          </TouchableOpacity>
         </View>
-      </View>
-
-      <Link href="/" style={styles.leftLink}>
-        Back to Home
-      </Link>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title="SEND"
-          onPress={() => alert("Link sent!")}
-          color="#FFFFFF"
-        />
-      </View>
-    </View>
+      </ImageBackground>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
-  },
-  header: {
-    fontWeight: "bold",
-    fontFamily: "Verdana",
-    fontSize: 35,
-    height: 50,
-    textAlign: "center",
-    justifyContent: "center",
-  },
-  buttonContainer: {
-    backgroundColor: "#274653",
-    padding: 10,
-    justifyContent: "center",
-    fontWeight: "bold",
-    fontFamily: "Verdana",
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 10,
-    marginRight: 10,
-    borderRadius: 15,
-  },
-  loginInputContainer: {
-    backgroundColor: "white",
-    fontSize: 20,
-    margin: 10,
-    padding: 10,
-    borderRadius: 15,
-    borderWidth: 1,
-    borderColor: "white",
-    textAlign: "left",
-    fontFamily: "Verdana",
-    shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 0.5,
-  },
-  row: {
-    flexDirection: "row",
-    margin: 5,
+    backgroundColor: "#121E26",
   },
   text: {
-    marginLeft: 10,
-    fontSize: 18,
-    textAlign: "left",
+    fontSize: 16,
+    color: "#FFFFFF",
     fontFamily: "Verdana",
+    margin: 10,
   },
-  information: {
-    margin: 20,
-    fontSize: 18,
-    textAlign: "left",
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover", // or stretch
+  },
+  content: {
+    flex: 1,
+    alignItems: "center",
     justifyContent: "center",
+    padding: 20,
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 30,
+  },
+  header: {
+    fontSize: 30,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    fontFamily: "Verdana",
+    color: "#FFFFFF",
+  },
+  inputContainer: {
+    width: "100%",
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 18,
+    marginVertical: 10,
+    textAlign: "left",
+    color: "#FFFFFF",
     fontFamily: "Verdana",
   },
-  image: {
-    width: 100,
-    height: 100,
-    margin: 30,
-    marginTop: 70,
-    alignSelf: "center",
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#FFFFFF",
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    color: "#FFFFFF",
+    fontFamily: "Verdana",
   },
   icon: {
     width: 20,
     height: 20,
     marginRight: 10,
+    tintColor: "#FFFFFF",
   },
-  textInput: { fontSize: 15, fontFamily: "Verdana" },
+  input: {
+    flex: 1,
+    fontSize: 16,
+    color: "#FFFFFF",
+    fontFamily: "Verdana",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+    textAlign: "center",
+    fontSize: 16,
+    fontFamily: "Verdana",
+  },
+  linkContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 30,
+    width: "100%",
+  },
   leftLink: {
-    textAlign: "left",
-    marginLeft: 10,
-    marginVertical: 10,
+    marginRight: "auto",
+  },
+  rightLink: {
+    marginLeft: "auto",
+  },
+  linkText: {
+    fontSize: 12,
+    color: "#FFFFFF",
+    fontFamily: "Verdana",
+  },
+  buttonContainer: {
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "#000000",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    fontFamily: "Verdana",
   },
 });
+
 
 export default ForgotPassword;

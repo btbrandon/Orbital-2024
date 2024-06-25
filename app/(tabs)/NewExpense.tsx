@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, ScrollView, Alert } from "react-native";
+import { Text, StyleSheet, ScrollView } from "react-native";
 import {
   Button,
-  Provider as PaperProvider,
   TextInput,
   Snackbar,
 } from "react-native-paper";
@@ -114,70 +113,55 @@ const NewExpense = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <PaperProvider>
-        <ScrollView>
-          <Text style={styles.label}>Category</Text>
-          <RNPickerSelect
-            onValueChange={(value) => setCategory(value)}
-            items={categoryOptions}
-            placeholder={{
-              label: "Select a category",
-              color: "black",
-              value: null,
-            }}
-            style={{
-              ...pickerSelectStyles,
-              inputAndroid: {
-                ...pickerSelectStyles.inputAndroid,
-                marginBottom: 10,
-              },
-              inputIOS: {
-                ...pickerSelectStyles.inputIOS,
-                marginBottom: 10,
-              },
-            }}
-            value={category}
-          />
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <Text style={styles.label}>Category</Text>
+        <RNPickerSelect
+          onValueChange={(value) => setCategory(value)}
+          items={categoryOptions}
+          placeholder={{
+            label: "Select a category",
+            value: null,
+          }}
+          style={pickerSelectStyles}
+          value={category}
+        />
 
-          <Text style={styles.label}>Name</Text>
-          <TextInput
-            label="Name"
-            style={styles.input}
-            onChangeText={(text) => setItemName(text)}
-            value={itemName}
-            placeholder="Enter item name"
-          />
+        <Text style={styles.label}>Name</Text>
+        <TextInput
+          label="Name"
+          style={styles.input}
+          onChangeText={(text) => setItemName(text)}
+          value={itemName}
+          placeholder="Enter item name"
+        />
 
-          <Text style={styles.label}>Price</Text>
-          <TextInput
-            label="Price"
-            style={styles.input}
-            onChangeText={(text) => setItemPrice(text)}
-            value={itemPrice}
-            placeholder="Enter price"
-            keyboardType="numeric"
-          />
+        <Text style={styles.label}>Price</Text>
+        <TextInput
+          label="Price"
+          style={styles.input}
+          onChangeText={(text) => setItemPrice(text)}
+          value={itemPrice}
+          placeholder="Enter price"
+          keyboardType="numeric"
+        />
 
-          <View style={styles.buttonContainer}>
-            <Button
-              mode="contained"
-              style={styles.button}
-              onPress={handleAddExpense}
-              color="#ffffff"
-            >
-              Add Item
-            </Button>
-          </View>
+        <Button
+          mode="contained"
+          style={styles.button}
+          onPress={handleAddExpense}
+          color="#121E26"
+        >
+          Add
+        </Button>
 
-          <Snackbar
-            visible={snackbarVisible}
-            onDismiss={() => setSnackbarVisible(false)}
-            duration={3000}
-          >
-            {snackbarMessage}
-          </Snackbar>
-        </ScrollView>
-      </PaperProvider>
+        <Snackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={3000}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -185,52 +169,47 @@ const NewExpense = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#284452",
     padding: 20,
   },
-  buttonContainer: {
-    marginTop: 20,
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: "center",
   },
   label: {
-    fontSize: 20,
-    marginVertical: 10,
-    fontFamily: "Verdana",
+    fontSize: 22,
+    marginBottom: 5,
     fontWeight: "bold",
+    color: "#ffffff"
   },
   input: {
-    backgroundColor: "white",
+    backgroundColor: "#ffffff",
     fontSize: 16,
-    paddingVertical: 10,
+    paddingVertical: 5,
     paddingHorizontal: 15,
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "#ccc",
-    marginBottom: 10,
+    marginBottom: 15,
   },
   button: {
-    backgroundColor: "#274653",
-    padding: 5,
-    justifyContent: "center",
-    fontWeight: "bold",
-    fontFamily: "Verdana",
-    margin: 10,
+    marginVertical: 20,
+    paddingVertical: 10,
     borderRadius: 10,
-    width: 150,
-    alignSelf: "center",
+    backgroundColor: "#121E26",
   },
 });
 
-const pickerSelectStyles = StyleSheet.create({
+const pickerSelectStyles = {
   inputIOS: {
     fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 15,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
     backgroundColor: "white",
-    marginBottom: 10,
-    width: 335,
+    marginBottom: 15,
   },
   inputAndroid: {
     fontSize: 16,
@@ -240,9 +219,8 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 5,
     backgroundColor: "white",
-    marginBottom: 10,
-    marginHorizontal: 10,
+    marginBottom: 15,
   },
-});
+};
 
 export default NewExpense;
