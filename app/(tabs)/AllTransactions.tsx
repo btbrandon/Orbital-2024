@@ -116,6 +116,8 @@ const TransactionScreen = () => {
     setRefreshing(false);
   };
 
+  
+
   const renderItem = ({ item }: { item: any }) => (
     <Card
       style={[

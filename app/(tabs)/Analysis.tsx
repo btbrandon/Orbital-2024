@@ -44,7 +44,7 @@ const Analysis = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchUsername = async () => {
+    const fetchUserId = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error) {
         console.log("Error fetching user:", error);
@@ -67,7 +67,7 @@ const Analysis = () => {
       setLoading(false);
     };
 
-    fetchUsername();
+    fetchUserId();
   }, []);
 
   const fetchAmounts = async () => {
@@ -114,12 +114,6 @@ const Analysis = () => {
 
   const series = [foodAmount, transportAmount, clothingAmount, otherAmount];
 
-  if (loading) {
-    return (
-      <ActivityIndicator animating={true} style={{ alignSelf: "center" }} />
-    );
-  }
-
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchAmounts();
@@ -128,54 +122,86 @@ const Analysis = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        <View style={{ alignItems: "center", margin: 10, marginTop: 0 }}>
-          <PieChart
-            widthAndHeight={widthAndHeight}
-            series={series}
-            sliceColor={sliceColor}
-            doughnut={true}
-            coverRadius={0.5}
-            coverFill={"#284452"}
-          />
-        </View>
-        <View style={styles.legend}>
-          {categories.map((category, index) => (
-            <View key={category} style={styles.legendItem}>
-              <View
+      {loading ? (
+        <ActivityIndicator
+          animating={true}
+          size="large"
+          color="#4ECDC4"
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        />
+      ) : (
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <View style={{ alignItems: "center", margin: 10, marginTop: 0 }}>
+            <PieChart
+              widthAndHeight={widthAndHeight}
+              series={series}
+              sliceColor={sliceColor}
+              doughnut={true}
+              coverRadius={0.5}
+              coverFill={"#284452"}
+            />
+          </View>
+          <View style={styles.legend}>
+            {categories.map((category, index) => (
+              <View key={category} style={styles.legendItem}>
+                <View
+                  style={[
+                    styles.legendColor,
+                    { backgroundColor: sliceColor[index] },
+                  ]}
+                />
+                <Text style={styles.legendText}>{category}</Text>
+              </View>
+            ))}
+          </View>
+          <View style={styles.cardSection}>
+            {categories.map((category, index) => (
+              <Card
+                key={category}
                 style={[
-                  styles.legendColor,
-                  { backgroundColor: sliceColor[index] },
+                  styles.card,
+                  { backgroundColor: categoryColors[category] || "#FFFFFF" },
                 ]}
-              />
-              <Text style={styles.legendText}>{category}</Text>
-            </View>
-          ))}
-        </View>
-        <View style={styles.cardSection}>
-          {categories.map((category, index) => (
-            <Card
-              key={category}
-              style={[
-                styles.card,
-                { backgroundColor: categoryColors[category] || "#FFFFFF" },
-              ]}
-            >
+              >
+                <Card.Content style={styles.cardContent}>
+                  <View style={styles.iconContainer}>
+                    <Icon
+                      name={categoryIcons[category] || "dots-horizontal"}
+                      size={40}
+                      color="#839dad"
+                    />
+                  </View>
+                  <View style={styles.cardLeft}>
+                    <Title style={styles.itemName}>{category}</Title>
+                  </View>
+                  <View style={styles.cardRight}>
+                    <Text
+                      style={[
+                        styles.priceText,
+                        {
+                          color:
+                            series[index].toFixed(2) < 0 ? "#d32c47" : "#d32c47",
+                        }, //to do
+                      ]}
+                    >
+                      {`$${series[index].toFixed(2)}`}
+                    </Text>
+                  </View>
+                </Card.Content>
+              </Card>
+            ))}
+            <Card style={styles.totalCard}>
               <Card.Content style={styles.cardContent}>
                 <View style={styles.iconContainer}>
-                  <Icon
-                    name={categoryIcons[category] || "dots-horizontal"}
-                    size={40}
-                    color="#839dad"
-                  />
+                  <Icon name="currency-usd" size={40} color="#839dad" />
                 </View>
                 <View style={styles.cardLeft}>
-                  <Title style={styles.itemName}>{category}</Title>
+                  <Title style={styles.itemName}>Total</Title>
                 </View>
                 <View style={styles.cardRight}>
                   <Text
@@ -183,40 +209,18 @@ const Analysis = () => {
                       styles.priceText,
                       {
                         color:
-                          series[index].toFixed(2) < 0 ? "#d32c47" : "#d32c47",
+                          dailyTotal.toFixed(2) < 0 ? "#d32c47" : "#d32c47",
                       }, //to do
                     ]}
                   >
-                    {`$${series[index].toFixed(2)}`}
+                    {`$${dailyTotal.toFixed(2)}`}
                   </Text>
                 </View>
               </Card.Content>
             </Card>
-          ))}
-          <Card style={styles.totalCard}>
-            <Card.Content style={styles.cardContent}>
-              <View style={styles.iconContainer}>
-                <Icon name="currency-usd" size={40} color="#839dad" />
-              </View>
-              <View style={styles.cardLeft}>
-                <Title style={styles.itemName}>Total</Title>
-              </View>
-              <View style={styles.cardRight}>
-                <Text
-                  style={[
-                    styles.priceText,
-                    {
-                      color: dailyTotal.toFixed(2) < 0 ? "#d32c47" : "#d32c47",
-                    }, //to do
-                  ]}
-                >
-                  {`$${dailyTotal.toFixed(2)}`}
-                </Text>
-              </View>
-            </Card.Content>
-          </Card>
-        </View>
-      </ScrollView>
+          </View>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
