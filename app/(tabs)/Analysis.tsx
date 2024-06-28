@@ -12,6 +12,7 @@ import supabase from "../../config/supabaseClient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Card, Paragraph, Title } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import React from "react";
 
 const Analysis = () => {
   const widthAndHeight = 200;
@@ -136,6 +137,7 @@ const Analysis = () => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
+          <Text style={styles.header}>Analytics</Text>
           <View style={{ alignItems: "center", margin: 10, marginTop: 0 }}>
             <PieChart
               widthAndHeight={widthAndHeight}
@@ -185,7 +187,9 @@ const Analysis = () => {
                         styles.priceText,
                         {
                           color:
-                            series[index].toFixed(2) < 0 ? "#d32c47" : "#d32c47",
+                            series[index].toFixed(2) < 0
+                              ? "#d32c47"
+                              : "#d32c47",
                         }, //to do
                       ]}
                     >
@@ -229,6 +233,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#284452",
+  },
+  header: {
+    fontWeight: "bold",
+    fontFamily: "Calibri",
+    fontSize: 25,
+    height: 50,
+    alignSelf: "center",
+    marginTop: 12,
+    color: "white",
   },
   legend: {
     flexDirection: "row",

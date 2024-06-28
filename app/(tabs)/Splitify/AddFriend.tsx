@@ -50,7 +50,7 @@ const AddFriend = () => {
     setRefreshing(false);
   };
 
-  const handleAddFriend = async () => {
+  const handleSendFriendRequest = async () => {
     if (!username.trim()) {
       Alert.alert("Error", "Please enter your friend's username");
       return;
@@ -71,29 +71,36 @@ const AddFriend = () => {
     const friendUserId = userData.user_id;
 
     // Check if there is already a pending friend request
-    const { data: existingRequests, error: existingRequestsError } = await supabase
-      .from("friend_request")
-      .select("*")
-      .eq("adder", userId)
-      .eq("addee", friendUserId);
+    const { data: existingRequests, error: existingRequestsError } =
+      await supabase
+        .from("friend_request")
+        .select("*")
+        .eq("adder", userId)
+        .eq("addee", friendUserId);
 
     if (existingRequestsError) {
-      console.error("Error checking existing friend requests:", existingRequestsError.message);
+      console.error(
+        "Error checking existing friend requests:",
+        existingRequestsError.message
+      );
       Alert.alert("Error", "Failed to check existing friend requests");
       return;
     }
 
     if (existingRequests.length > 0) {
-      Alert.alert("Error", "You already have a pending friend request to this user");
+      Alert.alert(
+        "Error",
+        "You already have a pending friend request to this user"
+      );
       setFriendUsername("");
       return;
     }
 
     // Adding a friend request to the Supabase database
     try {
-      const { data, error } = await supabase.from("friend_request").insert([
-        { adder: userId, addee: friendUserId },
-      ]);
+      const { data, error } = await supabase
+        .from("friend_request")
+        .insert([{ adder: userId, addee: friendUserId }]);
 
       if (error) {
         console.error("Error adding friend request:", error.message);
@@ -126,8 +133,11 @@ const AddFriend = () => {
             placeholder="Enter friend's username"
             autoCapitalize="none"
           />
-          <TouchableOpacity style={styles.addButton} onPress={handleAddFriend}>
-            <Text style={styles.buttonText}>Add Friend</Text>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={handleSendFriendRequest}
+          >
+            <Text style={styles.buttonText}>Send Friend Request</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

@@ -19,28 +19,26 @@ import supabase from "../../../config/supabaseClient";
 // 6. Way to remove bills once paid
 
 const index = () => {
-  
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [userId, setUserId] = useState<number>();
 
   const onRefresh = async () => {
-    
     setRefreshing(true);
     // await fetchAmounts();
     setRefreshing(false);
   };
 
   const handleAddFriend = () => {
-    router.push('../(tabs)/Splitify/AddFriend');
+    router.push("../(tabs)/Splitify/AddFriend");
   };
 
   const handleFriendRequest = () => {
-    router.push('../(tabs)/Splitify/FriendRequest');
+    router.push("../(tabs)/Splitify/FriendRequest");
   };
 
   const handleSplitBill = () => {
-    router.push('../(tabs)/Splitify/SplitBill');
+    router.push("../(tabs)/Splitify/SplitBill");
   };
 
   // get this User's ID
@@ -79,34 +77,45 @@ const index = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        <Text style={styles.header}>Splitify</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleAddFriend}>
             <Text style={styles.buttonText}>Add Friends</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleFriendRequest}>
-            <Text style={styles.buttonText}>View Friend Requests</Text>
+            <Text style={styles.buttonText}>Friend Requests</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.header}>IoUs</Text>
-        <View>
-        </View>
-          <Text style={styles.header}>UoMEs</Text>
-        <View>
-        </View>
+        <Text style={styles.header2}>IoUs</Text>
+        <View></View>
+        <Text style={styles.header2}>UoMEs</Text>
+        <View></View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.newBillButton} onPress={handleSplitBill}>
+          <TouchableOpacity
+            style={styles.newBillButton}
+            onPress={handleSplitBill}
+          >
             <Text style={styles.newBillButtonText}>Split New Bill</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#284452"
+    backgroundColor: "#284452",
+  },
+  header: {
+    fontWeight: "bold",
+    fontFamily: "Calibri",
+    fontSize: 25,
+    height: 50,
+    alignSelf: "center",
+    marginTop: 12,
+    color: "white",
   },
   buttonContainer: {
     flexDirection: "row",
@@ -144,7 +153,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     alignItems: "center",
   },
-  header: {
+  header2: {
     fontFamily: "Calibri",
     fontSize: 20,
     fontWeight: "bold",
@@ -152,7 +161,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     alignSelf: "flex-start",
     color: "white",
-    paddingTop: 30
+    paddingTop: 30,
   },
 });
 

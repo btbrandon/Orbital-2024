@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Text, StyleSheet, ScrollView } from "react-native";
-import {
-  Button,
-  TextInput,
-  Snackbar,
-} from "react-native-paper";
+import { Button, TextInput, Snackbar } from "react-native-paper";
 import RNPickerSelect from "react-native-picker-select";
 import supabase from "../../config/supabaseClient";
 import moment from "moment-timezone";
@@ -114,7 +110,8 @@ const NewExpense = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <Text style={styles.label}>Category</Text>
+        <Text style={styles.header}>Add Expense</Text>
+        {/* <Text style={styles.label}>Category</Text> */}
         <RNPickerSelect
           onValueChange={(value) => setCategory(value)}
           items={categoryOptions}
@@ -126,7 +123,7 @@ const NewExpense = () => {
           value={category}
         />
 
-        <Text style={styles.label}>Name</Text>
+        {/* <Text style={styles.label}>Name</Text> */}
         <TextInput
           label="Name"
           style={styles.input}
@@ -135,7 +132,7 @@ const NewExpense = () => {
           placeholder="Enter item name"
         />
 
-        <Text style={styles.label}>Price</Text>
+        {/* <Text style={styles.label}>Price</Text> */}
         <TextInput
           label="Price"
           style={styles.input}
@@ -170,17 +167,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#284452",
-    padding: 20,
+  },
+  header: {
+    fontWeight: "bold",
+    fontFamily: "Calibri",
+    fontSize: 25,
+    height: 50,
+    alignSelf: "center",
+    marginTop: 12,
+    color: "white",
   },
   scrollViewContent: {
     flexGrow: 1,
-    justifyContent: "center",
+    paddingHorizontal: 20,
   },
   label: {
     fontSize: 22,
     marginBottom: 5,
     fontWeight: "bold",
-    color: "#ffffff"
+    color: "#ffffff",
   },
   input: {
     backgroundColor: "#ffffff",

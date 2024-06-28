@@ -10,11 +10,11 @@ const TabsLayout = () => {
         tabBarActiveTintColor: "#c4c9cf",
         tabBarInactiveTintColor: "#000",
         tabBarStyle: {
-          height: 65,
-          paddingBottom: 15,
-          marginHorizontal: 10,
+          height: 75,
+          paddingTop: 20,
+          marginHorizontal: 0,
           marginBottom: 0,
-          borderRadius: 30,
+          borderRadius: 0,
           position: "absolute",
           backgroundColor: "rgba(255, 255, 255, 1)",
           shadowColor: "#000",
@@ -53,7 +53,11 @@ const TabsLayout = () => {
         name="Analysis"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="chart-bar" color={color} size={size} />
+            <MaterialCommunityIcons
+              name="chart-bar"
+              color={color}
+              size={size}
+            />
           ),
         }}
       />
@@ -69,7 +73,11 @@ const TabsLayout = () => {
         name="Splitify"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account-group" color={color} size={size} />
+            <MaterialCommunityIcons
+              name="account-group"
+              color={color}
+              size={size}
+            />
           ),
         }}
       />

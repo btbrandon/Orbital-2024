@@ -116,8 +116,6 @@ const TransactionScreen = () => {
     setRefreshing(false);
   };
 
-  
-
   const renderItem = ({ item }: { item: any }) => (
     <Card
       style={[
@@ -128,10 +126,10 @@ const TransactionScreen = () => {
       <Card.Content>
         <View style={styles.cardContent}>
           <View style={styles.iconContainer}>
-          <Icon
-            name={categoryIcons[item.category] || "dots-horizontal"}
-            size={40}
-            color="#839dad"
+            <Icon
+              name={categoryIcons[item.category] || "dots-horizontal"}
+              size={40}
+              color="#839dad"
             />
           </View>
           <View style={styles.cardLeft}>
@@ -141,16 +139,16 @@ const TransactionScreen = () => {
             </Paragraph>
           </View>
           <View style={styles.cardRight}>
-          <Text
-            style={[
-              styles.priceText,
-              { color: item.itemPrice < 0 ? "#d32c47" : "#d32c47" }, //to do
-            ]}
-          >
-            {item.itemPrice < 0
-              ? `-$${Math.abs(item.itemPrice).toFixed(2)}`
-              : `-$${item.itemPrice.toFixed(2)}`}
-          </Text>
+            <Text
+              style={[
+                styles.priceText,
+                { color: item.itemPrice < 0 ? "#d32c47" : "#d32c47" }, //to do
+              ]}
+            >
+              {item.itemPrice < 0
+                ? `-$${Math.abs(item.itemPrice).toFixed(2)}`
+                : `-$${item.itemPrice.toFixed(2)}`}
+            </Text>
           </View>
         </View>
       </Card.Content>
@@ -168,14 +166,31 @@ const TransactionScreen = () => {
     currentMonth
   );
 
-  return (
+  return loading ? (
+    <ActivityIndicator
+      animating={true}
+      size="large"
+      color="#4ECDC4"
+      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+    />
+  ) : (
     <SafeAreaView style={styles.container}>
       <View style={styles.navigation}>
-        <IconButton icon="chevron-left" size={30} onPress={handlePrevMonth} iconColor="white" />
+        <IconButton
+          icon="chevron-left"
+          size={30}
+          onPress={handlePrevMonth}
+          iconColor="white"
+        />
         <Text style={styles.monthLabel}>
           {format(currentMonth, "MMMM yyyy")}
         </Text>
-        <IconButton icon="chevron-right" size={30} onPress={handleNextMonth} iconColor="white" />
+        <IconButton
+          icon="chevron-right"
+          size={30}
+          onPress={handleNextMonth}
+          iconColor="white"
+        />
       </View>
       <FlatList
         data={filteredTransactions}
@@ -191,7 +206,7 @@ const TransactionScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingHorizontal: 16,
     backgroundColor: "#284452",
     flex: 1,
   },
@@ -200,10 +215,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
-    color: "white"
+    color: "white",
   },
   monthLabel: {
-    fontSize: 28,
+    fontSize: 25,
     fontWeight: "bold",
     color: "#ffffff",
   },

@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, RefreshControl, FlatList } from "react-native";
-import { Card, Title, Paragraph, ActivityIndicator, Text } from "react-native-paper";
+import {
+  Card,
+  Title,
+  Paragraph,
+  ActivityIndicator,
+  Text,
+} from "react-native-paper";
 import supabase from "../../config/supabaseClient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { format } from "date-fns";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
 
 const Homepage = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -59,10 +64,14 @@ const Homepage = () => {
   };
 
   const fetchExpenses = async () => {
+    const today = new Date();
+    const formattedDate = format(today, "yyyy-MM-dd");
+
     const { data, error } = await supabase
       .from("expenses")
       .select("category, itemPrice, itemName, date, time")
       .eq("user_id", userId)
+      .eq("date", formattedDate)
       .order("time", { ascending: false })
       .limit(5);
 
@@ -101,7 +110,7 @@ const Homepage = () => {
     Shopping: "cart",
     Others: "dots-horizontal",
   };
-  
+
   const categoryColors: { [key: string]: string } = {
     Food: "white",
     Transport: "white",
@@ -148,7 +157,9 @@ const Homepage = () => {
   );
 
   if (loading) {
-    return <ActivityIndicator animating={true} style={{ alignSelf: "center" }} />;
+    return (
+      <ActivityIndicator animating={true} style={{ alignSelf: "center" }} />
+    );
   }
 
   return (
@@ -163,14 +174,20 @@ const Homepage = () => {
               <View style={styles.separator}></View>
               <Text style={styles.text}>${total.toFixed(2)}</Text>
             </View>
-            <Text style={{ ...styles.header3, alignSelf: "flex-start" }}>Recent Transactions</Text>
+            <Text style={{ ...styles.header3, alignSelf: "flex-start" }}>
+              Recent Transactions
+            </Text>
           </>
         }
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         ListEmptyComponent={
-          <Text style={styles.noTransactionsText}>No transactions so far! 😄</Text>
+          <Text style={styles.noTransactionsText}>
+            No transactions so far! 😄
+          </Text>
         }
       />
     </SafeAreaView>
@@ -270,12 +287,11 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingTop: 4,
     marginBottom: -5,
-
   },
   itemDetails: {
     color: "black",
     fontSize: 12,
-    paddingLeft: 15
+    paddingLeft: 15,
   },
   priceText: {
     fontSize: 16,
