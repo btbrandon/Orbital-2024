@@ -82,6 +82,14 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
+        name="Friends"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="account-group" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="Settings"
         options={{
           tabBarIcon: ({ color, size }) => (

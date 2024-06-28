@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import {
   Text,
   StyleSheet,
-  RefreshControl,
   SafeAreaView,
   ScrollView,
   View,
-  TouchableOpacity,
+  RefreshControl,
 } from "react-native";
+import { Button, Card, Title, Paragraph, ActivityIndicator } from "react-native-paper";
 import supabase from "../../../config/supabaseClient";
 import { format } from "date-fns";
 
@@ -93,7 +93,6 @@ const FriendRequest = () => {
     }
 
     try {
-
       const { data, error } = await supabase.from("relationships").insert([
         { user1: userId, user2: adder, created_at: formattedDate },
         { user1: adder, user2: userId, created_at: formattedDate },
@@ -149,38 +148,45 @@ const FriendRequest = () => {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={fetchFriendRequests}
+            onRefresh={onRefresh}
           />
         }
       >
-        {friendRequests.length > 0 ? (
-          friendRequests.map((request) => (
-            <View key={request.adder} style={styles.requestContainer}>
-              <Text style={styles.requestText}>
-                <Text style={styles.boldText}>{request.name}</Text> sent you a
-                friend request.
-              </Text>
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={styles.acceptButton}
-                  onPress={() => handleAccept(request.adder)}
-                >
-                  <Text style={styles.buttonText}>Accept</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.declineButton}
-                  onPress={() => handleDecline(request.adder)}
-                >
-                  <Text style={styles.buttonText}>Decline</Text>
-                </TouchableOpacity>
-              </View>
+        <View>
+          <Text style={styles.sectionTitle}>Pending Friend Requests</Text>
+          {refreshing ? (
+            <ActivityIndicator animating={true} color="#fff" />
+          ) : friendRequests.length > 0 ? (
+            friendRequests.map((request) => (
+              <Card key={request.adder} style={styles.card}>
+                <Card.Content>
+                  <Title>{request.name} </Title>
+                  <Paragraph>sent you a friend request.</Paragraph>
+                </Card.Content>
+                <Card.Actions>
+                  <Button
+                    mode="contained"
+                    onPress={() => handleAccept(request.adder)}
+                    style={styles.acceptButton}
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    mode="contained"
+                    onPress={() => handleDecline(request.adder)}
+                    style={styles.declineButton}
+                  >
+                    Decline
+                  </Button>
+                </Card.Actions>
+              </Card>
+            ))
+          ) : (
+            <View style={styles.noRequestsContainer}>
+              <Text style={styles.noRequestsText}>No current friend requests.</Text>
             </View>
-          ))
-        ) : (
-          <View style={styles.noRequestsContainer}>
-            <Text style={styles.noRequestsText}>No current friend requests. Add some!</Text>
-          </View>
-        )}
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -191,36 +197,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#284452",
   },
-  requestContainer: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
-  requestText: {
+  sectionTitle: {
     color: "white",
-    fontSize: 16,
+    fontSize: 18,
+    fontWeight: "bold",
+    marginVertical: 30,
+    marginLeft: 20,
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 10,
+  card: {
+    margin: 10,
+    backgroundColor: "white",
   },
   acceptButton: {
+    marginRight: 10,
     backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 5,
   },
   declineButton: {
     backgroundColor: "#F44336",
-    padding: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  boldText: {
-    fontWeight: "bold",
   },
   noRequestsContainer: {
     flex: 1,
@@ -229,7 +222,7 @@ const styles = StyleSheet.create({
   },
   noRequestsText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 16,
   },
 });
 

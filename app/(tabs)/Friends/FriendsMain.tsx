@@ -27,9 +27,14 @@ const index = () => {
     setRefreshing(false);
   };
 
-  const handleSplitBill = () => {
-    router.push("../(tabs)/Splitify/SplitBill");
+  const handleAddFriend = () => {
+    router.push("../(tabs)/Friends/AddFriend");
   };
+
+  const handleFriendRequest = () => {
+    router.push("../(tabs)/Friends/FriendRequest");
+  };
+
 
   // get this User's ID
   useEffect(() => {
@@ -67,17 +72,13 @@ const index = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <Text style={styles.header}>Splitify</Text>
-        <Text style={styles.header2}>IoUs</Text>
-        <View></View>
-        <Text style={styles.header2}>UoMEs</Text>
-        <View></View>
+        <Text style={styles.header}>Friends</Text>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.newBillButton}
-            onPress={handleSplitBill}
-          >
-            <Text style={styles.newBillButtonText}>Split New Bill</Text>
+          <TouchableOpacity style={styles.button} onPress={handleAddFriend}>
+            <Text style={styles.buttonText}>Add Friends</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleFriendRequest}>
+            <Text style={styles.buttonText}>Friend Requests</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -104,6 +105,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     marginVertical: 20,
+  },
+  button: {
+    backgroundColor: "#121E26",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    flex: 1,
+    marginHorizontal: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFF",
+    fontWeight: "bold",
+    fontFamily: "Verdana",
+    fontSize: 12,
   },
   newBillButtonText: {
     color: "#FFF",
