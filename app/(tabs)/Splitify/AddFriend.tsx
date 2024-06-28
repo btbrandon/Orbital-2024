@@ -70,6 +70,25 @@ const AddFriend = () => {
 
     const friendUserId = userData.user_id;
 
+    // Check if users are already friends
+    const { data: existingRelationship, error: relationshipError } = await supabase
+      .from("relationships")
+      .select("*")
+      .or(`user1.eq.${userId},user2.eq.${userId}`)
+      .or(`user1.eq.${friendUserId},user2.eq.${friendUserId}`);
+
+    if (relationshipError) {
+      console.error("Error checking existing relationships:", relationshipError.message);
+      Alert.alert("Error", "Failed to check existing relationships");
+      return;
+    }
+
+    if (existingRelationship.length > 0) {
+      Alert.alert("Error", "User is already added as friend");
+      setFriendUsername("");
+      return;
+    }
+
     // Check if there is already a pending friend request
     const { data: existingRequests, error: existingRequestsError } =
       await supabase

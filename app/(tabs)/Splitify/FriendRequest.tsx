@@ -87,17 +87,34 @@ const FriendRequest = () => {
     const today = new Date();
     const formattedDate = format(today, "yyyy-MM-dd");
 
+    if (!userId || !adder) {
+      console.error("User ID or Adder is not defined");
+      return;
+    }
+
     try {
-      await supabase.from("relationships").insert([
+
+      const { data, error } = await supabase.from("relationships").insert([
         { user1: userId, user2: adder, created_at: formattedDate },
         { user1: adder, user2: userId, created_at: formattedDate },
       ]);
 
-      await supabase
+      if (error) {
+        console.error("Error inserting into relationships table:", error);
+        return;
+      }
+
+      // Delete from friend_request table
+      const { error: deleteError } = await supabase
         .from("friend_request")
         .delete()
         .eq("adder", adder)
         .eq("addee", userId);
+
+      if (deleteError) {
+        console.error("Error deleting from friend_request table:", deleteError);
+        return;
+      }
     } catch (error) {
       console.error("Error accepting friend request:", error);
     } finally {
@@ -136,28 +153,34 @@ const FriendRequest = () => {
           />
         }
       >
-        {friendRequests.map((request) => (
-          <View key={request.adder} style={styles.requestContainer}>
-            <Text style={styles.requestText}>
-              <Text style={styles.boldText}>{request.name}</Text> sent you a
-              friend request.
-            </Text>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.acceptButton}
-                onPress={() => handleAccept(request.adder)}
-              >
-                <Text style={styles.buttonText}>Accept</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.declineButton}
-                onPress={() => handleDecline(request.adder)}
-              >
-                <Text style={styles.buttonText}>Decline</Text>
-              </TouchableOpacity>
+        {friendRequests.length > 0 ? (
+          friendRequests.map((request) => (
+            <View key={request.adder} style={styles.requestContainer}>
+              <Text style={styles.requestText}>
+                <Text style={styles.boldText}>{request.name}</Text> sent you a
+                friend request.
+              </Text>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.acceptButton}
+                  onPress={() => handleAccept(request.adder)}
+                >
+                  <Text style={styles.buttonText}>Accept</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.declineButton}
+                  onPress={() => handleDecline(request.adder)}
+                >
+                  <Text style={styles.buttonText}>Decline</Text>
+                </TouchableOpacity>
+              </View>
             </View>
+          ))
+        ) : (
+          <View style={styles.noRequestsContainer}>
+            <Text style={styles.noRequestsText}>No current friend requests. Add some!</Text>
           </View>
-        ))}
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -198,6 +221,15 @@ const styles = StyleSheet.create({
   },
   boldText: {
     fontWeight: "bold",
+  },
+  noRequestsContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noRequestsText: {
+    color: "white",
+    fontSize: 18,
   },
 });
 
