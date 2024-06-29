@@ -232,7 +232,8 @@ const styles = StyleSheet.create({
   expenseContainer: {
     backgroundColor: "#121E26",
     padding: 12,
-    justifyContent: "flex-start",
+    justifyContent: "center",
+    alignItems: "center",
     fontWeight: "bold",
     fontFamily: "Calibri",
     marginBottom: 10,
@@ -242,10 +243,9 @@ const styles = StyleSheet.create({
   },
   text: {
     paddingHorizontal: 5,
-    fontSize: 45,
+    fontSize: 30,
     fontFamily: "Calibri",
     fontWeight: "bold",
-    paddingLeft: 18,
     margin: 10,
     color: "white",
   },
@@ -262,6 +262,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     height: 70,
     marginTop: 0,
+    marginHorizontal: 10,
   },
   cardContent: {
     flexDirection: "row",

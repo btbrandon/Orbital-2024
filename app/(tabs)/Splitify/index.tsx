@@ -89,10 +89,12 @@ const Index = () => {
       setIoUsTotal(ioUs);
       setUomEsTotal(uomEs);
       setUomEsDetails(
-        Object.entries(uomEsDetailsMap).map(([username, amount]) => ({
-          username,
-          amount,
-        }))
+        Object.entries(uomEsDetailsMap)
+          .filter(([_, amount]) => amount > 0)
+          .map(([username, amount]) => ({
+            username,
+            amount,
+          }))
       );
       setIoUsDetails(
         Object.entries(ioUsDetailsMap).map(([username, amount]) => ({

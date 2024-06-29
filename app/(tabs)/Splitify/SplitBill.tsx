@@ -12,6 +12,7 @@ import {
 import supabase from "../../../config/supabaseClient";
 import { format } from "date-fns";
 import { Snackbar } from "react-native-paper";
+import { router } from "expo-router";
 
 const SplitBill = () => {
   type Friend = {
@@ -115,6 +116,7 @@ const SplitBill = () => {
 
       setSnackbarMessage("Bill added successfully");
       setSnackbarVisible(true);
+      router.replace(".");
     } catch (error) {
       console.error("Unexpected error:", error);
     }

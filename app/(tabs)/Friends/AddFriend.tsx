@@ -165,6 +165,7 @@ const AddFriend = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.formContainer}>
+          <Text style={styles.header}>Add Friend</Text>
           <Text style={styles.label}>Friend's Username</Text>
           <TextInput
             style={styles.input}
@@ -196,6 +197,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#284452",
+  },
+  header: {
+    fontWeight: "bold",
+    fontFamily: "Calibri",
+    fontSize: 25,
+    height: 50,
+    alignSelf: "center",
+    marginTop: -20,
+    color: "white",
   },
   formContainer: {
     paddingHorizontal: 20,

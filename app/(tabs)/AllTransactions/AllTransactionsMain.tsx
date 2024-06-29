@@ -14,10 +14,11 @@ import {
   ActivityIndicator,
   Text,
 } from "react-native-paper";
-import supabase from "../../config/supabaseClient";
+import supabase from "../../../config/supabaseClient";
 import { format, subMonths, addMonths } from "date-fns";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Import the icon library
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 
 const categoryIcons: { [key: string]: string } = {
   Food: "food",
@@ -41,6 +42,7 @@ const TransactionScreen = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -116,6 +118,10 @@ const TransactionScreen = () => {
     setRefreshing(false);
   };
 
+  const handleEdit = (expense: any) => {
+    navigation.navigate("EditExpense", { expense });
+  };
+
   const renderItem = ({ item }: { item: any }) => (
     <Card
       style={[
@@ -149,6 +155,13 @@ const TransactionScreen = () => {
                 ? `-$${Math.abs(item.itemPrice).toFixed(2)}`
                 : `-$${item.itemPrice.toFixed(2)}`}
             </Text>
+            <IconButton
+              icon="pencil"
+              size={15}
+              onPress={() => handleEdit(item)}
+              iconColor="#121E26"
+              style={styles.iconButton}
+            />
           </View>
         </View>
       </Card.Content>
@@ -250,11 +263,14 @@ const styles = StyleSheet.create({
   },
   cardRight: {
     justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
   },
   itemName: {
     color: "#000000",
     fontSize: 16,
     fontWeight: "bold",
+    marginTop: -2,
   },
   itemDetails: {
     color: "#000000",
@@ -266,6 +282,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#000000",
     paddingBottom: 12,
+  },
+  iconButton: {
+    marginTop: -5,
   },
 });
 
