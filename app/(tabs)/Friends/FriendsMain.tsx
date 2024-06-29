@@ -24,11 +24,11 @@ const index = () => {
   };
 
   const handleAddFriend = () => {
-    router.push("../(tabs)/Friends/AddFriend");
+    router.push("/(tabs)/Friends/AddFriend");
   };
 
   const handleFriendRequest = () => {
-    router.push("../(tabs)/Friends/FriendRequest");
+    router.push("/(tabs)/Friends/FriendRequest");
   };
 
   const fetchFriends = async () => {

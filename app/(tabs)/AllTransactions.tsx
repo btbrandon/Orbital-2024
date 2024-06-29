@@ -175,6 +175,7 @@ const TransactionScreen = () => {
     />
   ) : (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Monthly Transactions</Text>
       <View style={styles.navigation}>
         <IconButton
           icon="chevron-left"
@@ -209,6 +210,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: "#284452",
     flex: 1,
+  },
+  title: {
+    fontWeight: "bold",
+    fontFamily: "Calibri",
+    fontSize: 25,
+    height: 50,
+    alignSelf: "center",
+    marginTop: 12,
+    color: "white",
   },
   navigation: {
     flexDirection: "row",

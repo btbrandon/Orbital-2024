@@ -11,12 +11,15 @@ import {
 } from "react-native";
 import supabase from "../../../config/supabaseClient";
 import { format } from 'date-fns';
+import { Snackbar } from "react-native-paper";
 
 const SplitBill = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [friends, setFriends] = useState([]);
   const [amounts, setAmounts] = useState({});
   const [userId, setUserId] = useState<string | null>(null);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -104,6 +107,8 @@ const SplitBill = () => {
       }
 
       console.log("Bills added successfully:", data);
+      setSnackbarMessage("Bill added successfully");
+      setSnackbarVisible(true);
     } catch (error) {
       console.error("Unexpected error:", error);
     }
@@ -138,6 +143,13 @@ const SplitBill = () => {
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
+        <Snackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={3000}
+        >
+          {snackbarMessage}
+        </Snackbar>
       </ScrollView>
     </SafeAreaView>
   );
@@ -149,10 +161,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#284452",
   },
   title: {
+    fontWeight: "bold",
+    fontFamily: "Calibri",
+    fontSize: 25,
+    height: 50,
+    alignSelf: "center",
+    marginTop: 12,
     color: "white",
-    fontSize: 24,
-    textAlign: "center",
-    marginVertical: 20,
   },
   friendContainer: {
     flexDirection: "row",

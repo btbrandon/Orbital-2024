@@ -1,29 +1,25 @@
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  StyleSheet,
   RefreshControl,
   SafeAreaView,
   ScrollView,
   View,
-  Text,
-  TouchableOpacity,
 } from "react-native";
+import { Button, Card, Text, Title, ActivityIndicator } from 'react-native-paper';
 import supabase from "../../../config/supabaseClient";
 
-// 3. Create Bill
-// 4. Track how much I owe people
-// 5. Track how much people owe me
-// 6. Way to remove bills once paid
-
-const index = () => {
+const Index = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [userId, setUserId] = useState<number>();
+  const [ioUsTotal, setIoUsTotal] = useState<number>(0);
+  const [uomEsTotal, setUomEsTotal] = useState<number>(0);
+  const [uomEsDetails, setUomEsDetails] = useState<any[]>([]);
 
   const onRefresh = async () => {
     setRefreshing(true);
-    // await fetchAmounts();
+    await fetchAmounts();
     setRefreshing(false);
   };
 
@@ -31,7 +27,49 @@ const index = () => {
     router.push("../(tabs)/Splitify/SplitBill");
   };
 
-  // get this User's ID
+  const fetchAmounts = async () => {
+    if (!userId) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("bill")
+        .select("owee, ower, amount")
+        .or(`owee.eq.${userId},ower.eq.${userId}`);
+
+      if (error) throw error;
+
+      let ioUs = 0;
+      let uomEs = 0;
+      const details = {};
+
+      for (const bill of data) {
+        if (bill.owee === userId) {
+          ioUs += bill.amount;
+        } else if (bill.ower === userId) {
+          uomEs += bill.amount;
+          const userResponse = await supabase
+            .from("user_credentials")
+            .select("username")
+            .eq("user_id", bill.owee);
+
+          const username = userResponse.data[0]?.username;
+
+          if (details[username]) {
+            details[username] += bill.amount;
+          } else {
+            details[username] = bill.amount;
+          }
+        }
+      }
+
+      setIoUsTotal(ioUs);
+      setUomEsTotal(uomEs);
+      setUomEsDetails(Object.entries(details).map(([username, amount]) => ({ username, amount })));
+    } catch (error) {
+      console.error("Error fetching amounts:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchUserId = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -59,6 +97,12 @@ const index = () => {
     fetchUserId();
   }, []);
 
+  useEffect(() => {
+    if (userId) {
+      fetchAmounts();
+    }
+  }, [userId]);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -67,25 +111,49 @@ const index = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <Text style={styles.header}>Splitify</Text>
-        <Text style={styles.header2}>IoUs</Text>
-        <View></View>
-        <Text style={styles.header2}>UoMEs</Text>
-        <View></View>
+        <Title style={styles.header}>Splitify</Title>
+        <Title style={styles.header2}>IoUs</Title>
+        <View>
+          {loading ? (
+            <ActivityIndicator animating={true} style={styles.loading} />
+          ) : (
+            <Text style={styles.amountText}>${ioUsTotal.toFixed(2)}</Text>
+          )}
+        </View>
+        <Title style={styles.header2}>UoMEs</Title>
+        <View>
+          {loading ? (
+            <ActivityIndicator animating={true} style={styles.loading} />
+          ) : (
+            <>
+              <Text style={styles.amountText}>${uomEsTotal.toFixed(2)}</Text>
+              {uomEsDetails.map((detail, index) => (
+                <Card key={index} style={styles.detailItem}>
+                  <Card.Content>
+                    <Text style={styles.detailText}>
+                      {detail.username}: ${detail.amount.toFixed(2)}
+                    </Text>
+                  </Card.Content>
+                </Card>
+              ))}
+            </>
+          )}
+        </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.newBillButton}
+          <Button
+            mode="contained"
             onPress={handleSplitBill}
+            style={styles.newBillButton}
           >
-            <Text style={styles.newBillButtonText}>Split New Bill</Text>
-          </TouchableOpacity>
+            Split New Bill
+          </Button>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
+const styles = {
   container: {
     flex: 1,
     backgroundColor: "#284452",
@@ -99,37 +167,38 @@ const styles = StyleSheet.create({
     marginTop: 12,
     color: "white",
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    marginVertical: 20,
+  header2: {
+    marginTop: 20,
+    marginBottom: 10,
+    color: "#ffffff",
   },
-  newBillButtonText: {
-    color: "#FFF",
-    fontWeight: "bold",
-    fontFamily: "Verdana",
-    fontSize: 16,
+  amountText: {
+    marginLeft: 15,
+    color: "#ffffff",
+  },
+  loading: {
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    color: "#ffffff",
+  },
+  detailItem: {
+    margin: 10,
+    backgroundColor: "#121E26",
+    color: "#ffffff",
+  },
+  detailText: {
+    color: "#ffffff",
+  },
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+    color: "white"
   },
   newBillButton: {
-    backgroundColor: "#121E26",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderRadius: 5,
-    flex: 1,
-    marginHorizontal: 10,
-    alignItems: "center",
+    color: "#ffffff",
   },
-  header2: {
-    fontFamily: "Calibri",
-    fontSize: 20,
-    fontWeight: "bold",
-    marginHorizontal: 15,
-    marginTop: 5,
-    alignSelf: "flex-start",
-    color: "white",
-    paddingTop: 30,
-  },
-});
+};
 
-export default index;
+export default Index;
