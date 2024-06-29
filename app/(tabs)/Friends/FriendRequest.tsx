@@ -7,7 +7,13 @@ import {
   View,
   RefreshControl,
 } from "react-native";
-import { Button, Card, Title, Paragraph, ActivityIndicator } from "react-native-paper";
+import {
+  Button,
+  Card,
+  Title,
+  Paragraph,
+  ActivityIndicator,
+} from "react-native-paper";
 import supabase from "../../../config/supabaseClient";
 import { format } from "date-fns";
 
@@ -146,10 +152,7 @@ const FriendRequest = () => {
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
         <View>
@@ -183,7 +186,9 @@ const FriendRequest = () => {
             ))
           ) : (
             <View style={styles.noRequestsContainer}>
-              <Text style={styles.noRequestsText}>No current friend requests.</Text>
+              <Text style={styles.noRequestsText}>
+                No current friend requests.
+              </Text>
             </View>
           )}
         </View>
@@ -198,14 +203,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#284452",
   },
   sectionTitle: {
-    color: "white",
-    fontSize: 18,
     fontWeight: "bold",
-    marginVertical: 30,
-    marginLeft: 20,
+    fontFamily: "Calibri",
+    fontSize: 25,
+    height: 50,
+    alignSelf: "center",
+    marginTop: 12,
+    color: "white",
   },
   card: {
-    margin: 10,
+    marginHorizontal: 10,
     backgroundColor: "white",
   },
   acceptButton: {

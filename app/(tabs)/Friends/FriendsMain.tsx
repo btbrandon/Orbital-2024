@@ -100,14 +100,6 @@ const index = () => {
         }
       >
         <Text style={styles.header}>Friends</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleAddFriend}>
-            <Text style={styles.buttonText}>Add Friends</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleFriendRequest}>
-            <Text style={styles.buttonText}>Friend Requests</Text>
-          </TouchableOpacity>
-        </View>
         <Text style={styles.header2}>Friends List</Text>
         <View>
           {loading ? (
@@ -121,6 +113,14 @@ const index = () => {
           ) : (
             <Text style={styles.noFriendsText}>No friends added yet.</Text>
           )}
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleAddFriend}>
+            <Text style={styles.buttonText}>Add Friends</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleFriendRequest}>
+            <Text style={styles.buttonText}>Friend Requests</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 5,
     flex: 1,
-    marginHorizontal: 10,
+    marginHorizontal: 15,
     alignItems: "center",
   },
   buttonText: {
@@ -173,16 +173,17 @@ const styles = StyleSheet.create({
     paddingTop: 30,
   },
   friendItem: {
-    backgroundColor: "#121E26",
+    backgroundColor: "#ffffff",
     padding: 10,
     marginVertical: 5,
     marginHorizontal: 15,
     borderRadius: 5,
   },
   friendText: {
-    color: "#FFF",
+    color: "#000000",
     fontFamily: "Verdana",
-    fontSize: 16,
+    fontWeight: "bold",
+    fontSize: 12,
   },
   loadingText: {
     color: "white",

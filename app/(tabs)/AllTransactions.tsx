@@ -142,7 +142,7 @@ const TransactionScreen = () => {
             <Text
               style={[
                 styles.priceText,
-                { color: item.itemPrice < 0 ? "#d32c47" : "#d32c47" }, //to do
+                { color: item.itemPrice < 0 ? "#d32c47" : "#d32c47" },
               ]}
             >
               {item.itemPrice < 0

@@ -10,12 +10,17 @@ import {
   TouchableOpacity,
 } from "react-native";
 import supabase from "../../../config/supabaseClient";
-import { format } from 'date-fns';
+import { format } from "date-fns";
 import { Snackbar } from "react-native-paper";
 
 const SplitBill = () => {
+  type Friend = {
+    user_id: string;
+    username: string;
+  };
+
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [friends, setFriends] = useState([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
   const [amounts, setAmounts] = useState({});
   const [userId, setUserId] = useState<string | null>(null);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -63,7 +68,7 @@ const SplitBill = () => {
         .or(`user1.eq.${userId},user2.eq.${userId}`);
       if (error) throw error;
 
-      const friendIds = data.map((relationship) => 
+      const friendIds = data.map((relationship) =>
         relationship.user1 === userId ? relationship.user2 : relationship.user1
       );
 
@@ -96,7 +101,9 @@ const SplitBill = () => {
       const bills = friends.map((friend) => ({
         owee: userId,
         ower: friend.user_id,
-        amount: amounts[friend.user_id],
+        amount: amounts[friend.user_id]
+          ? parseFloat(amounts[friend.user_id])
+          : 0,
         created_at: formattedDate,
       }));
 
@@ -106,7 +113,6 @@ const SplitBill = () => {
         return;
       }
 
-      console.log("Bills added successfully:", data);
       setSnackbarMessage("Bill added successfully");
       setSnackbarVisible(true);
     } catch (error) {
@@ -128,7 +134,7 @@ const SplitBill = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <Text style={styles.title}>Split Bill Page</Text>
+        <Text style={styles.title}>Split New Bill</Text>
         {friends.map((friend) => (
           <View key={friend.user_id} style={styles.friendContainer}>
             <Text style={styles.friendName}>{friend.username}</Text>

@@ -186,7 +186,7 @@ const Homepage = () => {
         }
         ListEmptyComponent={
           <Text style={styles.noTransactionsText}>
-            No transactions so far! 😄
+            No transactions today! 😄
           </Text>
         }
       />

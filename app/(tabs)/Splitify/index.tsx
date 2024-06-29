@@ -4,9 +4,17 @@ import {
   RefreshControl,
   SafeAreaView,
   ScrollView,
+  TouchableOpacity,
   View,
 } from "react-native";
-import { Button, Card, Text, Title, ActivityIndicator } from 'react-native-paper';
+import {
+  Button,
+  Card,
+  Text,
+  Title,
+  ActivityIndicator,
+  IconButton,
+} from "react-native-paper";
 import supabase from "../../../config/supabaseClient";
 
 const Index = () => {
@@ -16,6 +24,7 @@ const Index = () => {
   const [ioUsTotal, setIoUsTotal] = useState<number>(0);
   const [uomEsTotal, setUomEsTotal] = useState<number>(0);
   const [uomEsDetails, setUomEsDetails] = useState<any[]>([]);
+  const [ioUsDetails, setIoUsDetails] = useState<any[]>([]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -40,33 +49,104 @@ const Index = () => {
 
       let ioUs = 0;
       let uomEs = 0;
-      const details = {};
+      const uomEsDetailsMap = {};
+      const ioUsDetailsMap = {};
 
       for (const bill of data) {
         if (bill.owee === userId) {
-          ioUs += bill.amount;
-        } else if (bill.ower === userId) {
           uomEs += bill.amount;
+          const userResponse = await supabase
+            .from("user_credentials")
+            .select("username")
+            .eq("user_id", bill.ower);
+
+          const username = userResponse.data[0]?.username;
+
+          if (uomEsDetailsMap[username]) {
+            uomEsDetailsMap[username] += bill.amount;
+          } else {
+            uomEsDetailsMap[username] = bill.amount;
+          }
+        } else if (bill.ower === userId) {
+          ioUs += bill.amount;
           const userResponse = await supabase
             .from("user_credentials")
             .select("username")
             .eq("user_id", bill.owee);
 
           const username = userResponse.data[0]?.username;
-
-          if (details[username]) {
-            details[username] += bill.amount;
+          if (ioUsDetailsMap[username]) {
+            ioUsDetailsMap[username] += bill.amount;
           } else {
-            details[username] = bill.amount;
+            ioUsDetailsMap[username] = bill.amount;
           }
         }
       }
 
       setIoUsTotal(ioUs);
       setUomEsTotal(uomEs);
-      setUomEsDetails(Object.entries(details).map(([username, amount]) => ({ username, amount })));
+      setUomEsDetails(
+        Object.entries(uomEsDetailsMap).map(([username, amount]) => ({
+          username,
+          amount,
+        }))
+      );
+      setIoUsDetails(
+        Object.entries(ioUsDetailsMap).map(([username, amount]) => ({
+          username,
+          amount,
+        }))
+      );
     } catch (error) {
       console.error("Error fetching amounts:", error);
+    }
+  };
+
+  const fetchUserIdByUsername = async (username: String) => {
+    const { data, error } = await supabase
+      .from("user_credentials")
+      .select("user_id")
+      .eq("username", username)
+      .single(); // Use .single() to get the first match
+
+    if (error) {
+      console.error("Error fetching user ID:", error.message);
+      return null;
+    }
+
+    return data?.user_id || null;
+  };
+
+  const deleteBill = async (oweeId: number, owerId: number) => {
+    const { error } = await supabase
+      .from("bill")
+      .delete()
+      .eq("owee", oweeId)
+      .eq("ower", owerId);
+
+    if (error) {
+      console.error("Error deleting bill:", error.message);
+      throw error;
+    }
+  };
+
+  const handleDelete = async (username: String, amount: number) => {
+    try {
+      const oweeId = await fetchUserIdByUsername(username);
+
+      if (!oweeId) {
+        console.error("User ID to delete is undefined or null.");
+        return;
+      }
+
+      await deleteBill(userId, oweeId);
+
+      setUomEsDetails(
+        uomEsDetails.filter((detail) => detail.username !== username)
+      );
+      setUomEsTotal(uomEsTotal - amount);
+    } catch (error) {
+      console.error("Error deleting bill:", error);
     }
   };
 
@@ -112,41 +192,63 @@ const Index = () => {
         }
       >
         <Title style={styles.header}>Splitify</Title>
-        <Title style={styles.header2}>IoUs</Title>
-        <View>
-          {loading ? (
-            <ActivityIndicator animating={true} style={styles.loading} />
-          ) : (
-            <Text style={styles.amountText}>${ioUsTotal.toFixed(2)}</Text>
-          )}
-        </View>
-        <Title style={styles.header2}>UoMEs</Title>
+        <Title style={styles.header2}>I Owe</Title>
         <View>
           {loading ? (
             <ActivityIndicator animating={true} style={styles.loading} />
           ) : (
             <>
-              <Text style={styles.amountText}>${uomEsTotal.toFixed(2)}</Text>
-              {uomEsDetails.map((detail, index) => (
+              {ioUsDetails.map((detail, index) => (
                 <Card key={index} style={styles.detailItem}>
-                  <Card.Content>
-                    <Text style={styles.detailText}>
-                      {detail.username}: ${detail.amount.toFixed(2)}
+                  <Card.Content style={styles.cardContent}>
+                    <Text style={styles.detailText}>{detail.username}</Text>
+                    <Text style={styles.amountText}>
+                      ${detail.amount.toFixed(2)}
                     </Text>
                   </Card.Content>
                 </Card>
               ))}
+              <Text style={styles.totalText}>
+                Total: ${ioUsTotal.toFixed(2)}
+              </Text>
+            </>
+          )}
+        </View>
+        <Title style={styles.header2}>Friends Owe</Title>
+        <View>
+          {loading ? (
+            <ActivityIndicator animating={true} style={styles.loading} />
+          ) : (
+            <>
+              {uomEsDetails.map((detail, index) => (
+                <Card key={index} style={styles.detailItem}>
+                  <Card.Content style={styles.cardContent}>
+                    <Text style={styles.detailText}>{detail.username}</Text>
+                    <Text style={styles.amountText}>
+                      ${detail.amount.toFixed(2)}
+                    </Text>
+                    <IconButton
+                      icon="delete"
+                      color="red"
+                      size={15}
+                      style={styles.iconButton}
+                      onPress={() =>
+                        handleDelete(detail.username, detail.amount)
+                      }
+                    />
+                  </Card.Content>
+                </Card>
+              ))}
+              <Text style={styles.totalText}>
+                Total: ${uomEsTotal.toFixed(2)}
+              </Text>
             </>
           )}
         </View>
         <View style={styles.buttonContainer}>
-          <Button
-            mode="contained"
-            onPress={handleSplitBill}
-            style={styles.newBillButton}
-          >
-            Split New Bill
-          </Button>
+          <TouchableOpacity style={styles.button} onPress={handleSplitBill}>
+            <Text style={styles.buttonText}>New Bill</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -170,34 +272,68 @@ const styles = {
   header2: {
     marginTop: 20,
     marginBottom: 10,
+    marginHorizontal: 10,
     color: "#ffffff",
+    fontWeight: "bold",
   },
   amountText: {
-    marginLeft: 15,
+    color: "#d32c47",
+    fontWeight: "bold",
+    alignSelf: "center",
+    justifyContent: "center",
+  },
+  totalText: {
+    marginTop: 10,
+    marginRight: 15,
     color: "#ffffff",
+    fontWeight: "bold",
+    alignSelf: "flex-end",
   },
   loading: {
-    marginLeft: 'auto',
-    marginRight: 'auto',
+    marginLeft: "auto",
+    marginRight: "auto",
     color: "#ffffff",
   },
   detailItem: {
-    margin: 10,
-    backgroundColor: "#121E26",
+    margin: 5,
+    backgroundColor: "#ffffff",
     color: "#ffffff",
+    marginHorizontal: 15,
   },
   detailText: {
-    color: "#ffffff",
+    color: "#000000",
+    fontWeight: "bold",
+  },
+  cardContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   buttonContainer: {
-    display: 'flex',
-    justifyContent: 'center',
+    display: "flex",
+    justifyContent: "center",
     marginTop: 20,
     marginBottom: 20,
-    color: "white"
+    color: "white",
   },
-  newBillButton: {
-    color: "#ffffff",
+  button: {
+    backgroundColor: "#121E26",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    flex: 1,
+    marginHorizontal: 15,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFF",
+    fontWeight: "bold",
+    fontFamily: "Verdana",
+    fontSize: 12,
+  },
+  iconButton: {
+    marginRight: 0,
+    marginVertical: -5,
+    color: "#ff0000",
   },
 };
 
