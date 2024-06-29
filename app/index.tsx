@@ -117,8 +117,6 @@ const Login = () => {
             </View>
           </View>
 
-          
-
           {/* Forgot password and Sign up links */}
           <View style={styles.linkContainer}>
             <Link href="Signup" style={styles.leftLink}>
@@ -189,7 +187,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "left",
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   inputRow: {
     flexDirection: "row",
@@ -200,7 +198,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   icon: {
     width: 20,
@@ -212,14 +210,14 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   errorText: {
     color: "red",
     marginBottom: 10,
     textAlign: "center",
     fontSize: 16,
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   linkContainer: {
     flexDirection: "row",
@@ -236,7 +234,7 @@ const styles = StyleSheet.create({
   linkText: {
     fontSize: 12,
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   buttonContainer: {
     backgroundColor: "#FFFFFF",

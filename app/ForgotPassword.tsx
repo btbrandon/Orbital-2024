@@ -1,29 +1,40 @@
 import React, { useState } from "react";
-import { Text, TextInput, View, Image, StyleSheet, SafeAreaView, ImageBackground, TouchableOpacity, StatusBar, Alert } from "react-native";
+import {
+  Text,
+  TextInput,
+  View,
+  Image,
+  StyleSheet,
+  SafeAreaView,
+  ImageBackground,
+  TouchableOpacity,
+  StatusBar,
+  Alert,
+} from "react-native";
 import { Link } from "expo-router";
 import supabase from "../config/supabaseClient";
 
-  const ForgotPassword = () => {
+const ForgotPassword = () => {
   StatusBar.setBarStyle("light-content", true);
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
-  }
+  };
 
   const handleForgotPassword = async () => {
     console.log("Forgot Password button pressed");
     try {
       const { data, error } = await supabase.auth.resetPasswordForEmail(email);
-      console.log('Data:', data);
-      console.log('Error:', error);
+      console.log("Data:", data);
+      console.log("Error:", error);
       console.log(email);
       if (error) {
-        setMessage('Error: ' + error.message);
+        setMessage("Error: " + error.message);
         return;
       } else {
-        Alert.alert('Password reset link has been sent to your email.');
+        Alert.alert("Password reset link has been sent to your email.");
       }
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -52,14 +63,17 @@ import supabase from "../config/supabaseClient";
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Email</Text>
             <View style={styles.inputRow}>
-              <Image source={require("../assets/email.webp")} style={styles.icon} />
+              <Image
+                source={require("../assets/email.webp")}
+                style={styles.icon}
+              />
               <TextInput
-              placeholder="Email"
-              placeholderTextColor="white"
-              style={styles.input}
-              keyboardType="email-address"
-              onChangeText={handleEmailChange}
-            />
+                placeholder="Email"
+                placeholderTextColor="white"
+                style={styles.input}
+                keyboardType="email-address"
+                onChangeText={handleEmailChange}
+              />
             </View>
           </View>
 
@@ -68,10 +82,10 @@ import supabase from "../config/supabaseClient";
           </Link>
 
           <TouchableOpacity
-                style={styles.buttonContainer}
-                onPress={handleForgotPassword}
-                activeOpacity={0.8}
-              >
+            style={styles.buttonContainer}
+            onPress={handleForgotPassword}
+            activeOpacity={0.8}
+          >
             <Text style={styles.buttonText}>Send Reset Link</Text>
           </TouchableOpacity>
         </View>
@@ -88,7 +102,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
     margin: 10,
   },
   backgroundImage: {
@@ -111,7 +125,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
     color: "#FFFFFF",
   },
   inputContainer: {
@@ -123,7 +137,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     textAlign: "left",
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   inputRow: {
     flexDirection: "row",
@@ -134,7 +148,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   icon: {
     width: 20,
@@ -146,14 +160,14 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   errorText: {
     color: "red",
     marginBottom: 10,
     textAlign: "center",
     fontSize: 16,
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   linkContainer: {
     flexDirection: "row",
@@ -170,7 +184,7 @@ const styles = StyleSheet.create({
   linkText: {
     fontSize: 12,
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   buttonContainer: {
     backgroundColor: "#FFFFFF",
@@ -184,9 +198,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
 });
-
 
 export default ForgotPassword;

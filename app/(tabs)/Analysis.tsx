@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   legendText: {
     color: "#FFFFFF",
     fontSize: 12,
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   cardSection: {
     padding: 10,

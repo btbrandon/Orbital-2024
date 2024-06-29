@@ -14,6 +14,7 @@ import {
   Title,
   ActivityIndicator,
   IconButton,
+  Snackbar,
 } from "react-native-paper";
 import supabase from "../../../config/supabaseClient";
 
@@ -25,6 +26,8 @@ const Index = () => {
   const [uomEsTotal, setUomEsTotal] = useState<number>(0);
   const [uomEsDetails, setUomEsDetails] = useState<any[]>([]);
   const [ioUsDetails, setIoUsDetails] = useState<any[]>([]);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -145,6 +148,8 @@ const Index = () => {
         uomEsDetails.filter((detail) => detail.username !== username)
       );
       setUomEsTotal(uomEsTotal - amount);
+      setSnackbarMessage("Bill deleted successfully!");
+      setSnackbarVisible(true);
     } catch (error) {
       console.error("Error deleting bill:", error);
     }
@@ -202,7 +207,7 @@ const Index = () => {
                 <Card key={index} style={styles.detailItem}>
                   <Card.Content style={styles.cardContent}>
                     <Text style={styles.detailText}>{detail.username}</Text>
-                    <Text style={styles.amountText}>
+                    <Text style={styles.amountTextIOwe}>
                       ${detail.amount.toFixed(2)}
                     </Text>
                   </Card.Content>
@@ -224,18 +229,18 @@ const Index = () => {
                 <Card key={index} style={styles.detailItem}>
                   <Card.Content style={styles.cardContent}>
                     <Text style={styles.detailText}>{detail.username}</Text>
-                    <Text style={styles.amountText}>
+                    <Text style={styles.amountTextFriendsOwe}>
                       ${detail.amount.toFixed(2)}
+                      <IconButton
+                        icon="delete"
+                        color="red"
+                        size={15}
+                        style={styles.iconButton}
+                        onPress={() =>
+                          handleDelete(detail.username, detail.amount)
+                        }
+                      />
                     </Text>
-                    <IconButton
-                      icon="delete"
-                      color="red"
-                      size={15}
-                      style={styles.iconButton}
-                      onPress={() =>
-                        handleDelete(detail.username, detail.amount)
-                      }
-                    />
                   </Card.Content>
                 </Card>
               ))}
@@ -250,6 +255,13 @@ const Index = () => {
             <Text style={styles.buttonText}>New Bill</Text>
           </TouchableOpacity>
         </View>
+        <Snackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={3000}
+        >
+          {snackbarMessage}
+        </Snackbar>
       </ScrollView>
     </SafeAreaView>
   );
@@ -270,21 +282,31 @@ const styles = {
     color: "white",
   },
   header2: {
-    marginTop: 20,
+    fontSize: 20,
+    marginTop: 10,
     marginBottom: 10,
     marginHorizontal: 10,
     color: "#ffffff",
     fontWeight: "bold",
   },
-  amountText: {
+  amountTextFriendsOwe: {
     color: "#d32c47",
     fontWeight: "bold",
     alignSelf: "center",
     justifyContent: "center",
+    marginTop: -8,
+    marginRight: -20,
+  },
+  amountTextIOwe: {
+    color: "#d32c47",
+    fontWeight: "bold",
+    alignSelf: "center",
+    justifyContent: "center",
+    marginRight: 24,
   },
   totalText: {
     marginTop: 10,
-    marginRight: 15,
+    marginRight: 30,
     color: "#ffffff",
     fontWeight: "bold",
     alignSelf: "flex-end",
@@ -297,8 +319,9 @@ const styles = {
   detailItem: {
     margin: 5,
     backgroundColor: "#ffffff",
-    color: "#ffffff",
     marginHorizontal: 15,
+    borderRadius: 10,
+    padding: 10,
   },
   detailText: {
     color: "#000000",
@@ -307,6 +330,7 @@ const styles = {
   cardContent: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   buttonContainer: {
     display: "flex",
@@ -327,11 +351,10 @@ const styles = {
   buttonText: {
     color: "#FFF",
     fontWeight: "bold",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
     fontSize: 12,
   },
   iconButton: {
-    marginRight: 0,
     marginVertical: -5,
     color: "#ff0000",
   },

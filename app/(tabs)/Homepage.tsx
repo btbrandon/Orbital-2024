@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     padding: 12,
     justifyContent: "flex-start",
     fontWeight: "bold",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
     marginBottom: 10,
     marginHorizontal: 10,
     borderRadius: 10,
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   text: {
     paddingHorizontal: 5,
     fontSize: 45,
-    fontFamily: "CALIBRI",
+    fontFamily: "Calibri",
     fontWeight: "bold",
     paddingLeft: 18,
     margin: 10,

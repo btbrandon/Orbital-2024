@@ -112,73 +112,73 @@ const Signup = () => {
         resizeMode="cover"
       >
         <View style={styles.content}>
-        <Image
+          <Image
             source={require("../assets/Logo.png")}
             style={styles.logo}
             resizeMode="contain"
           />
-        <Text style={styles.header}>Sign Up</Text>
+          <Text style={styles.header}>Sign Up</Text>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
-          <View style={styles.inputRow}>
-            <Image
-              source={require("../assets/email.webp")}
-              style={styles.icon}
-            />
-            <TextInput
-              placeholder="Email"
-              placeholderTextColor="white"
-              style={styles.input}
-              keyboardType="email-address"
-              onChangeText={handleEmailChange}
-            />
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Email</Text>
+            <View style={styles.inputRow}>
+              <Image
+                source={require("../assets/email.webp")}
+                style={styles.icon}
+              />
+              <TextInput
+                placeholder="Email"
+                placeholderTextColor="white"
+                style={styles.input}
+                keyboardType="email-address"
+                onChangeText={handleEmailChange}
+              />
+            </View>
           </View>
-        </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Username</Text>
-          <View style={styles.inputRow}>
-            <Image
-              source={require("../assets/username.png")}
-              style={styles.icon}
-            />
-            <TextInput
-              placeholder="Username"
-              placeholderTextColor="white"
-              style={styles.input}
-              onChangeText={handleUsernameChange}
-            />
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Username</Text>
+            <View style={styles.inputRow}>
+              <Image
+                source={require("../assets/username.png")}
+                style={styles.icon}
+              />
+              <TextInput
+                placeholder="Username"
+                placeholderTextColor="white"
+                style={styles.input}
+                onChangeText={handleUsernameChange}
+              />
+            </View>
           </View>
-        </View>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Password (min 6 char.)</Text>
-          <View style={styles.inputRow}>
-            <Image
-              source={require("../assets/password.png")}
-              style={styles.icon}
-            />
-            <TextInput
-              secureTextEntry={true}
-              placeholder="Password"
-              placeholderTextColor="white"
-              style={styles.input}
-              onChangeText={handlePasswordChange}
-            />
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Password (min 6 char.)</Text>
+            <View style={styles.inputRow}>
+              <Image
+                source={require("../assets/password.png")}
+                style={styles.icon}
+              />
+              <TextInput
+                secureTextEntry={true}
+                placeholder="Password"
+                placeholderTextColor="white"
+                style={styles.input}
+                onChangeText={handlePasswordChange}
+              />
+            </View>
           </View>
-        </View>
 
-        <View style={styles.linkContainer}>
-          <Link href="/" style={styles.leftLink}>
-            <Text style={styles.linkText}>Already have an account?</Text>
-          </Link>
-        </View>
+          <View style={styles.linkContainer}>
+            <Link href="/" style={styles.leftLink}>
+              <Text style={styles.linkText}>Already have an account?</Text>
+            </Link>
+          </View>
 
-        {/* Error Message */}
-        {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
+          {/* Error Message */}
+          {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
 
-        <TouchableOpacity
+          <TouchableOpacity
             style={styles.buttonContainer}
             onPress={handleSignup}
             activeOpacity={0.8}
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
     margin: 10,
   },
   backgroundImage: {
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: "left",
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   inputRow: {
     flexDirection: "row",
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   icon: {
     width: 20,
@@ -257,14 +257,14 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   errorText: {
     color: "red",
     marginBottom: 10,
     textAlign: "center",
     fontSize: 16,
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   linkContainer: {
     flexDirection: "row",
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
   linkText: {
     fontSize: 12,
     color: "#FFFFFF",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
   buttonContainer: {
     backgroundColor: "#FFFFFF",
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
   },
 });
 

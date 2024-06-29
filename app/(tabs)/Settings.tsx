@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     padding: 5,
     justifyContent: "center",
     fontWeight: "bold",
-    fontFamily: "Verdana",
+    fontFamily: "Calibri",
     marginTop: 10,
     marginBottom: 10,
     marginLeft: 10,
