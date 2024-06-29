@@ -74,7 +74,7 @@ const TabsLayout = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
-              name="account-group"
+              name="call-split"
               color={color}
               size={size}
             />
