@@ -92,7 +92,6 @@ const NewExpense = () => {
         return;
       }
 
-      // Reset fields after adding the expense
       setCategory("");
       setItemName("");
       setItemPrice("");
@@ -111,7 +110,6 @@ const NewExpense = () => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <Text style={styles.header}>Add Expense</Text>
-        {/* <Text style={styles.label}>Category</Text> */}
         <RNPickerSelect
           onValueChange={(value) => setCategory(value)}
           items={categoryOptions}
@@ -123,7 +121,6 @@ const NewExpense = () => {
           value={category}
         />
 
-        {/* <Text style={styles.label}>Name</Text> */}
         <TextInput
           label="Name"
           style={styles.input}
@@ -132,7 +129,6 @@ const NewExpense = () => {
           placeholder="Enter item name"
         />
 
-        {/* <Text style={styles.label}>Price</Text> */}
         <TextInput
           label="Price"
           style={styles.input}

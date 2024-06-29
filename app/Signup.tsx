@@ -5,7 +5,6 @@ import {
   View,
   Image,
   StyleSheet,
-  Alert,
   TouchableOpacity,
   ImageBackground,
   StatusBar,
@@ -13,13 +12,15 @@ import {
 import { Link, router } from "expo-router";
 import supabase from "../config/supabaseClient";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Snackbar } from "react-native-paper";
 
 const Signup = () => {
   StatusBar.setBarStyle("light-content", true);
   const [email, setEmail] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [formError, setFormError] = useState<string>("");
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
@@ -33,13 +34,12 @@ const Signup = () => {
 
   const handleSignup = async (e: { preventDefault: () => void }) => {
     if (!email || !username || !password) {
-      setFormError("Please fill in all the fields");
-      Alert.alert(formError);
+      setSnackbarMessage("Please fill in all the fields.");
+      setSnackbarVisible(true);
       return;
     }
 
     try {
-      // Check if username is already taken
       const { data: existingUserByUsername, error: usernameError } =
         await supabase
           .from("user_credentials")
@@ -48,11 +48,9 @@ const Signup = () => {
           .single();
 
       if (usernameError && usernameError.code !== "PGRST116") {
-        // PGRST116 indicates no rows found, ignore this error
         throw usernameError;
       }
 
-      // Check if email is already taken
       const { data: existingUserByEmail, error: emailError } = await supabase
         .from("user_credentials")
         .select("user_id")
@@ -64,24 +62,23 @@ const Signup = () => {
       }
 
       if (existingUserByUsername) {
-        setFormError("Username is taken.");
-        Alert.alert(formError);
+        setSnackbarMessage("Username already taken.");
+        setSnackbarVisible(true);
         return;
       }
 
       if (existingUserByEmail) {
-        setFormError("Email already linked to an existing user.");
-        Alert.alert(formError);
+        setSnackbarMessage("Email already linked to an existing user.");
+        setSnackbarVisible(true);
         return;
       }
 
       if (password.length < 6) {
-        setFormError("Password should at least be 6 characters long.");
-        Alert.alert(formError);
+        setSnackbarMessage("Password should at least be 6 characters long.");
+        setSnackbarVisible(true);
         return;
       }
 
-      // If no errors and both email and username are unique, proceed with insertion
       const { data, error } = await supabase.auth.signUp({ email, password });
 
       if (error) {
@@ -92,22 +89,20 @@ const Signup = () => {
         .from("user_credentials")
         .insert([{ email, username, password }]);
 
-      Alert.alert(
-        "Signup Successful",
-        "Welcome! Your account has been created."
-      );
+      setSnackbarMessage("Welcome! Your account has been created.");
+      setSnackbarVisible(true);
       router.replace("/");
     } catch (error: any) {
       console.error("Signup error:", error);
-      setFormError(error.message || "An unexpected error occurred");
-      Alert.alert(formError);
+      setSnackbarMessage("An unexpected error occurred.");
+      setSnackbarVisible(true);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
-        source={require("../assets/background.jpg")} // Replace with your background image path
+        source={require("../assets/background.jpg")}
         style={styles.backgroundImage}
         resizeMode="cover"
       >
@@ -174,10 +169,6 @@ const Signup = () => {
               <Text style={styles.linkText}>Already have an account?</Text>
             </Link>
           </View>
-
-          {/* Error Message */}
-          {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
-
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={handleSignup}
@@ -185,6 +176,13 @@ const Signup = () => {
           >
             <Text style={styles.buttonText}>SIGN UP</Text>
           </TouchableOpacity>
+          <Snackbar
+            visible={snackbarVisible}
+            onDismiss={() => setSnackbarVisible(false)}
+            duration={3000}
+          >
+            {snackbarMessage}
+          </Snackbar>
         </View>
       </ImageBackground>
     </SafeAreaView>

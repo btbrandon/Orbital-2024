@@ -110,7 +110,7 @@ const Index = () => {
       .from("user_credentials")
       .select("user_id")
       .eq("username", username)
-      .single(); // Use .single() to get the first match
+      .single();
 
     if (error) {
       console.error("Error fetching user ID:", error.message);

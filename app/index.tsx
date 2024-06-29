@@ -14,12 +14,14 @@ import {
 import { Link, router } from "expo-router";
 import supabase from "../config/supabaseClient";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Snackbar } from "react-native-paper";
 
 const Login = () => {
   StatusBar.setBarStyle("light-content", true);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [formError, setFormError] = useState<string>("");
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleUsernameChange = (text: string) => {
     setUsername(text);
@@ -30,7 +32,8 @@ const Login = () => {
 
   const handleLogin = async () => {
     if (!username || !password) {
-      setFormError("Please fill in all the fields");
+      setSnackbarMessage("Please fill in all the fields.");
+      setSnackbarVisible(true);
       return;
     }
 
@@ -42,8 +45,8 @@ const Login = () => {
         .single();
 
       if (userError) {
-        setFormError("No user found with that username");
-        Alert.alert("No user found with that username");
+        setSnackbarMessage("No user found with that username.");
+        setSnackbarVisible(true);
         return;
       }
 
@@ -53,15 +56,15 @@ const Login = () => {
       });
 
       if (error) {
-        setFormError("Login Error: " + error.message);
-        Alert.alert("Login Error", `${error}`);
+        setSnackbarMessage(error.message);
+        setSnackbarVisible(true);
         return;
       }
 
-      setFormError("");
       router.replace("./(tabs)/Homepage");
     } catch (error: any) {
-      Alert.alert("Error", error.message || "An unexpected error occurred");
+      setSnackbarMessage("An unexpected error occurred.");
+      setSnackbarVisible(true);
     }
   };
 
@@ -79,8 +82,6 @@ const Login = () => {
             resizeMode="contain"
           />
           <Text style={styles.header}>Piggify</Text>
-
-          {/* Username */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Username</Text>
             <View style={styles.inputRow}>
@@ -97,8 +98,6 @@ const Login = () => {
               />
             </View>
           </View>
-
-          {/* Password */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Password</Text>
             <View style={styles.inputRow}>
@@ -116,8 +115,6 @@ const Login = () => {
               />
             </View>
           </View>
-
-          {/* Forgot password and Sign up links */}
           <View style={styles.linkContainer}>
             <Link href="Signup" style={styles.leftLink}>
               <Text style={styles.linkText}>Don't have an account?</Text>
@@ -126,11 +123,6 @@ const Login = () => {
               <Text style={styles.linkText}>Forgot your password?</Text>
             </Link> */}
           </View>
-
-          {/* Error Message */}
-          {formError ? <Text style={styles.errorText}>{formError}</Text> : null}
-
-          {/* Login Button */}
           <TouchableOpacity
             style={styles.buttonContainer}
             onPress={handleLogin}
@@ -138,6 +130,13 @@ const Login = () => {
           >
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
+          <Snackbar
+            visible={snackbarVisible}
+            onDismiss={() => setSnackbarVisible(false)}
+            duration={3000}
+          >
+            {snackbarMessage}
+          </Snackbar>
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -149,12 +148,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#121E26",
   },
-  // text: {
-  //   fontSize: 32,
-  //   color: "#FFFFFF",
-  //   fontFamily: "Calibri",
-  // },
-
   backgroundImage: {
     flex: 1,
     resizeMode: "cover", // or stretch
