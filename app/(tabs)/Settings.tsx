@@ -1,5 +1,12 @@
 import { router } from "expo-router";
-import { View, ScrollView, Button, StyleSheet, Text } from "react-native";
+import {
+  View,
+  ScrollView,
+  Button,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import supabase from "../../config/supabaseClient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React from "react";
@@ -19,7 +26,9 @@ const Settings = () => {
       <ScrollView>
         <Text style={styles.header}>Settings</Text>
         <View style={styles.buttonContainer}>
-          <Button title="Sign Out" onPress={handleSignOut} color="#ffffff" />
+          <TouchableOpacity style={styles.button} onPress={handleSignOut}>
+            <Text style={styles.buttonText}>Sign Out</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -41,16 +50,26 @@ const styles = StyleSheet.create({
     color: "white",
   },
   buttonContainer: {
-    backgroundColor: "#121E26",
-    padding: 5,
+    display: "flex",
     justifyContent: "center",
+    marginTop: 20,
+    marginBottom: 20,
+    color: "white",
+  },
+  button: {
+    backgroundColor: "#121E26",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    flex: 1,
+    marginHorizontal: 15,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFF",
     fontWeight: "bold",
     fontFamily: "Calibri",
-    marginTop: 10,
-    marginBottom: 10,
-    marginLeft: 10,
-    marginRight: 10,
-    borderRadius: 10,
+    fontSize: 15,
   },
 });
 

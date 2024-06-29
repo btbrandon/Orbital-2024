@@ -11,11 +11,15 @@ import {
   RefreshControl,
 } from "react-native";
 import supabase from "../../../config/supabaseClient";
+import { Snackbar } from "react-native-paper";
+import { router } from "expo-router";
 
 const AddFriend = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [username, setFriendUsername] = useState<string>("");
   const [userId, setUserId] = useState<string | null>(null);
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -44,19 +48,13 @@ const AddFriend = () => {
     fetchUserId();
   }, []);
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    // Implement refresh logic here if needed
-    setRefreshing(false);
-  };
-
   const handleSendFriendRequest = async () => {
     if (!username.trim()) {
-      Alert.alert("Error", "Please enter your friend's username");
+      setSnackbarMessage("Please enter your friend's username.");
+      setSnackbarVisible(true);
       return;
     }
 
-    // Check if the user exists in the user_credentials table
     const { data: userData, error: userError } = await supabase
       .from("user_credentials")
       .select("user_id")
@@ -64,32 +62,37 @@ const AddFriend = () => {
       .single();
 
     if (userError || !userData) {
-      Alert.alert("Error", "User not found");
+      setSnackbarMessage("User not found.");
+      setSnackbarVisible(true);
       return;
     }
 
     const friendUserId = userData.user_id;
 
-    // Check if users are already friends
-    const { data: existingRelationship, error: relationshipError } = await supabase
-      .from("relationships")
-      .select("*")
-      .or(`user1.eq.${userId},user2.eq.${userId}`)
-      .or(`user1.eq.${friendUserId},user2.eq.${friendUserId}`);
+    const { data: existingRelationship, error: relationshipError } =
+      await supabase
+        .from("relationships")
+        .select("*")
+        .or(`user1.eq.${userId},user2.eq.${userId}`)
+        .or(`user1.eq.${friendUserId},user2.eq.${friendUserId}`);
 
     if (relationshipError) {
-      console.error("Error checking existing relationships:", relationshipError.message);
-      Alert.alert("Error", "Failed to check existing relationships");
+      console.error(
+        "Error checking existing relationships:",
+        relationshipError.message
+      );
+      setSnackbarMessage("Failed to check existing relationships.");
+      setSnackbarVisible(true);
       return;
     }
 
     if (existingRelationship.length > 0) {
-      Alert.alert("Error", "User is already added as friend");
+      setSnackbarMessage("User is already added as friend.");
+      setSnackbarVisible(true);
       setFriendUsername("");
       return;
     }
 
-    // Check if there is already a pending friend request
     const { data: existingRequests, error: existingRequestsError } =
       await supabase
         .from("friend_request")
@@ -102,47 +105,65 @@ const AddFriend = () => {
         "Error checking existing friend requests:",
         existingRequestsError.message
       );
-      Alert.alert("Error", "Failed to check existing friend requests");
+      setSnackbarMessage("Failed to check existing friend requests.");
+      setSnackbarVisible(true);
       return;
     }
 
     if (existingRequests.length > 0) {
-      Alert.alert(
-        "Error",
-        "You already have a pending friend request to this user"
+      setSnackbarMessage(
+        "You already have a pending friend request to this user."
       );
+      setSnackbarVisible(true);
       setFriendUsername("");
       return;
     }
 
-    // Adding a friend request to the Supabase database
+    const { data: pendingRequests, error: pendingRequestsError } =
+      await supabase
+        .from("friend_request")
+        .select("*")
+        .eq("addee", userId)
+        .eq("adder", friendUserId);
+
+    if (pendingRequests.length > 0) {
+      setSnackbarMessage(
+        "You already have a pending friend request from this user."
+      );
+      setSnackbarVisible(true);
+      setFriendUsername("");
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("friend_request")
         .insert([{ adder: userId, addee: friendUserId }]);
 
+      router.replace("./FriendsMain");
+
       if (error) {
         console.error("Error adding friend request:", error.message);
-        Alert.alert("Error", "Failed to add friend request");
+        setSnackbarMessage(`Failed to add friend request` + error);
+        setSnackbarVisible(true);
         return;
       }
 
-      Alert.alert("Success", `Friend request sent to ${username} successfully`);
-      setFriendUsername(""); // Clear the input field after successful addition
+      setFriendUsername("");
+      setSnackbarMessage(
+        `Friend request sent to ${username} successfully` + error
+      );
+      setSnackbarVisible(true);
     } catch (error) {
       console.error("Error adding friend request:", error.message);
-      Alert.alert("Error", "Failed to add friend request");
+      setSnackbarMessage("Error adding friend request" + error);
+      setSnackbarVisible(true);
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.formContainer}>
           <Text style={styles.label}>Friend's Username</Text>
           <TextInput
@@ -159,6 +180,13 @@ const AddFriend = () => {
             <Text style={styles.buttonText}>Send Friend Request</Text>
           </TouchableOpacity>
         </View>
+        <Snackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={3000}
+        >
+          {snackbarMessage}
+        </Snackbar>
       </ScrollView>
     </SafeAreaView>
   );
