@@ -174,7 +174,7 @@ const Signup = () => {
             onPress={handleSignup}
             activeOpacity={0.8}
           >
-            <Text style={styles.buttonText}>SIGN UP</Text>
+            <Text style={styles.buttonText}>Sign Up</Text>
           </TouchableOpacity>
           <Snackbar
             visible={snackbarVisible}
