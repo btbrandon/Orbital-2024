@@ -98,6 +98,17 @@ const SplitBill = () => {
     const today = new Date();
     const formattedDate = format(today, "yyyy-MM-dd");
 
+    const isAnyFieldFilled = friends.some(
+      (friend) =>
+        amounts[friend.user_id] && parseFloat(amounts[friend.user_id]) > 0
+    );
+
+    if (!isAnyFieldFilled) {
+      setSnackbarMessage("Please fill in at least one field");
+      setSnackbarVisible(true);
+      return;
+    }
+
     try {
       const bills = friends.map((friend) => ({
         owee: userId,

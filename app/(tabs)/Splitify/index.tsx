@@ -205,19 +205,25 @@ const Index = () => {
             <ActivityIndicator animating={true} style={styles.loading} />
           ) : (
             <>
-              {ioUsDetails.map((detail, index) => (
-                <Card key={index} style={styles.detailItem}>
-                  <Card.Content style={styles.cardContent}>
-                    <Text style={styles.detailText}>{detail.username}</Text>
-                    <Text style={styles.amountTextIOwe}>
-                      ${detail.amount.toFixed(2)}
-                    </Text>
-                  </Card.Content>
-                </Card>
-              ))}
-              <Text style={styles.totalText}>
-                Total: ${ioUsTotal.toFixed(2)}
-              </Text>
+              {ioUsDetails.length === 0 ? (
+                <Text style={styles.noMoneyText}>You don't owe any money!</Text>
+              ) : (
+                ioUsDetails.map((detail, index) => (
+                  <Card key={index} style={styles.detailItem}>
+                    <Card.Content style={styles.cardContent}>
+                      <Text style={styles.detailText}>{detail.username}</Text>
+                      <Text style={styles.amountTextIOwe}>
+                        ${detail.amount.toFixed(2)}
+                      </Text>
+                    </Card.Content>
+                  </Card>
+                ))
+              )}
+              {ioUsTotal > 0 && (
+                <Text style={styles.totalText}>
+                  Total: ${ioUsTotal.toFixed(2)}
+                </Text>
+              )}
             </>
           )}
         </View>
@@ -227,28 +233,34 @@ const Index = () => {
             <ActivityIndicator animating={true} style={styles.loading} />
           ) : (
             <>
-              {uomEsDetails.map((detail, index) => (
-                <Card key={index} style={styles.detailItem}>
-                  <Card.Content style={styles.cardContent}>
-                    <Text style={styles.detailText}>{detail.username}</Text>
-                    <Text style={styles.amountTextFriendsOwe}>
-                      ${detail.amount.toFixed(2)}
-                      <IconButton
-                        icon="delete"
-                        color="red"
-                        size={15}
-                        style={styles.iconButton}
-                        onPress={() =>
-                          handleDelete(detail.username, detail.amount)
-                        }
-                      />
-                    </Text>
-                  </Card.Content>
-                </Card>
-              ))}
-              <Text style={styles.totalText}>
-                Total: ${uomEsTotal.toFixed(2)}
-              </Text>
+              {uomEsDetails.length === 0 ? (
+                <Text style={styles.noMoneyText}>No one owes you money!</Text>
+              ) : (
+                uomEsDetails.map((detail, index) => (
+                  <Card key={index} style={styles.detailItem}>
+                    <Card.Content style={styles.cardContent}>
+                      <Text style={styles.detailText}>{detail.username}</Text>
+                      <Text style={styles.amountTextFriendsOwe}>
+                        ${detail.amount.toFixed(2)}
+                        <IconButton
+                          icon="delete"
+                          color="red"
+                          size={15}
+                          style={styles.iconButton}
+                          onPress={() =>
+                            handleDelete(detail.username, detail.amount)
+                          }
+                        />
+                      </Text>
+                    </Card.Content>
+                  </Card>
+                ))
+              )}
+              {uomEsTotal > 0 && (
+                <Text style={styles.totalText}>
+                  Total: ${uomEsTotal.toFixed(2)}
+                </Text>
+              )}
             </>
           )}
         </View>
@@ -287,6 +299,7 @@ const styles = {
     fontSize: 20,
     marginTop: 10,
     marginBottom: 10,
+
     marginHorizontal: 10,
     color: "#ffffff",
     fontWeight: "bold",
@@ -359,6 +372,12 @@ const styles = {
   iconButton: {
     marginVertical: -5,
     color: "#ff0000",
+  },
+  noMoneyText: {
+    color: "#ffffff",
+    fontSize: 20,
+    alignSelf: "center",
+    marginTop: 10,
   },
 };
 

@@ -109,7 +109,6 @@ const FriendRequest = () => {
         return;
       }
 
-      // Delete from friend_request table
       const { error: deleteError } = await supabase
         .from("friend_request")
         .delete()

@@ -38,7 +38,7 @@ const EditExpense = () => {
       return;
     }
     if (parseFloat(itemPrice) > 1e8) {
-      setSnackbarMessage("Error: expense too large");
+      setSnackbarMessage("Expense too large");
       setSnackbarVisible(true);
       return;
     }
@@ -96,7 +96,8 @@ const EditExpense = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <Text style={styles.header}>Edit Expense</Text>
         <TextInput
           label="Name"
           style={styles.input}
@@ -142,7 +143,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#284452",
-    padding: 16,
+  },
+  header: {
+    fontWeight: "bold",
+    fontFamily: "Calibri",
+    fontSize: 25,
+    height: 50,
+    alignSelf: "center",
+    marginTop: 12,
+    color: "white",
+  },
+  scrollViewContent: {
     flexGrow: 1,
     paddingHorizontal: 20,
   },

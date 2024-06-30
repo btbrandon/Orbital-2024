@@ -56,7 +56,7 @@ const Login = () => {
       });
 
       if (error) {
-        setSnackbarMessage(error.message);
+        setSnackbarMessage(error.message + ".");
         setSnackbarVisible(true);
         return;
       }

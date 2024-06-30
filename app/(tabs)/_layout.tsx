@@ -85,7 +85,11 @@ const TabsLayout = () => {
         name="Friends"
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account-group" color={color} size={size} />
+            <MaterialCommunityIcons
+              name="account-group"
+              color={color}
+              size={size}
+            />
           ),
         }}
       />
