@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { TextInput, Button, Snackbar } from "react-native-paper";
 import supabase from "../../../config/supabaseClient";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -62,41 +68,72 @@ const EditExpense = () => {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      const { error } = await supabase
+        .from("expenses")
+        .delete()
+        .eq("transactionId", expense.transactionId);
+
+      if (error) {
+        console.error("Error deleting expense:", error);
+        setSnackbarMessage(error.message || "Error deleting expense");
+        setSnackbarVisible(true);
+        return;
+      }
+
+      setSnackbarMessage("Expense deleted successfully");
+      setSnackbarVisible(true);
+      navigation.goBack();
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Unexpected error:", error);
+        setSnackbarMessage(error.message || "An unexpected error occurred");
+        setSnackbarVisible(true);
+      }
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <TextInput
-        label="Name"
-        style={styles.input}
-        onChangeText={(text) => setItemName(text)}
-        value={itemName}
-        placeholder="Enter item name"
-      />
+      <ScrollView>
+        <TextInput
+          label="Name"
+          style={styles.input}
+          onChangeText={(text) => setItemName(text)}
+          value={itemName}
+          placeholder="Enter item name"
+        />
 
-      <TextInput
-        label="Price"
-        style={styles.input}
-        onChangeText={(text) => setItemPrice(text)}
-        value={itemPrice}
-        placeholder="Enter price"
-        keyboardType="numeric"
-      />
+        <TextInput
+          label="Price"
+          style={styles.input}
+          onChangeText={(text) => setItemPrice(text)}
+          value={itemPrice}
+          placeholder="Enter price"
+          keyboardType="numeric"
+        />
 
-      <Button
-        mode="contained"
-        style={styles.button}
-        onPress={handleSave}
-        color="#121E26"
-      >
-        Save
-      </Button>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleSave}>
+            <Text style={styles.buttonText}>Save</Text>
+          </TouchableOpacity>
+        </View>
 
-      <Snackbar
-        visible={snackbarVisible}
-        onDismiss={() => setSnackbarVisible(false)}
-        duration={3000}
-      >
-        {snackbarMessage}
-      </Snackbar>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleDelete}>
+            <Text style={styles.buttonText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Snackbar
+          visible={snackbarVisible}
+          onDismiss={() => setSnackbarVisible(false)}
+          duration={3000}
+        >
+          {snackbarMessage}
+        </Snackbar>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -106,6 +143,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#284452",
     padding: 16,
+    flexGrow: 1,
+    paddingHorizontal: 20,
   },
   input: {
     backgroundColor: "#ffffff",
@@ -117,11 +156,23 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     marginBottom: 15,
   },
+  buttonContainer: {
+    justifyContent: "center",
+    marginTop: 5,
+    color: "white",
+  },
   button: {
-    marginVertical: 20,
+    backgroundColor: "#121E26",
+    paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 10,
-    backgroundColor: "#121E26",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFF",
+    fontWeight: "bold",
+    fontFamily: "Calibri",
+    fontSize: 15,
   },
 });
 

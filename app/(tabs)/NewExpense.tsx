@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Text, StyleSheet, ScrollView } from "react-native";
+import {
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Button, TextInput, Snackbar } from "react-native-paper";
 import RNPickerSelect from "react-native-picker-select";
 import supabase from "../../config/supabaseClient";
@@ -138,14 +144,11 @@ const NewExpense = () => {
           keyboardType="numeric"
         />
 
-        <Button
-          mode="contained"
-          style={styles.button}
-          onPress={handleAddExpense}
-          color="#121E26"
-        >
-          Add
-        </Button>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleAddExpense}>
+            <Text style={styles.buttonText}>Add</Text>
+          </TouchableOpacity>
+        </View>
 
         <Snackbar
           visible={snackbarVisible}
@@ -193,11 +196,26 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     marginBottom: 15,
   },
+  buttonContainer: {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: 20,
+    marginBottom: 20,
+    color: "white",
+  },
   button: {
-    marginVertical: 20,
+    backgroundColor: "#121E26",
+    paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 10,
-    backgroundColor: "#121E26",
+    flex: 1,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFF",
+    fontWeight: "bold",
+    fontFamily: "Calibri",
+    fontSize: 15,
   },
 });
 

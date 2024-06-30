@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   },
   itemName: {
     color: "black",
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "bold",
     paddingLeft: 15,
     paddingTop: 4,

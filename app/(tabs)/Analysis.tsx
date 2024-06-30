@@ -10,12 +10,19 @@ import {
 import PieChart from "react-native-pie-chart";
 import supabase from "../../config/supabaseClient";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Card, Paragraph, Title } from "react-native-paper";
+import { Card, Title, IconButton } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import React from "react";
+import {
+  format,
+  subMonths,
+  addMonths,
+  startOfMonth,
+  endOfMonth,
+} from "date-fns";
 
 const Analysis = () => {
-  const widthAndHeight = 200;
+  const widthAndHeight = 185;
   const sliceColor = ["#B2DFFB", "#4ECDC4", "#DAC4F7", "#EBD2B4"];
   const categories = ["Food", "Transport", "Clothing", "Others"];
 
@@ -37,12 +44,13 @@ const Analysis = () => {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [userId, setUserId] = useState<number>();
-  const [foodAmount, setFoodAmount] = useState<number>();
-  const [transportAmount, setTransportAmount] = useState<number>();
-  const [clothingAmount, setClothingAmount] = useState<number>();
-  const [otherAmount, setOtherAmount] = useState<number>();
-  const [dailyTotal, setDailyTotal] = useState<number>();
+  const [foodAmount, setFoodAmount] = useState<number>(0);
+  const [transportAmount, setTransportAmount] = useState<number>(0);
+  const [clothingAmount, setClothingAmount] = useState<number>(0);
+  const [otherAmount, setOtherAmount] = useState<number>(0);
+  const [dailyTotal, setDailyTotal] = useState<number>(0);
   const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -76,13 +84,18 @@ const Analysis = () => {
 
     setLoading(true);
 
+    const startOfSelectedMonth = startOfMonth(currentMonth);
+    const endOfSelectedMonth = endOfMonth(currentMonth);
+
     try {
       const fetchCategoryAmount = async (category: string) => {
         const { data, error } = await supabase
           .from("expenses")
           .select("itemPrice")
           .eq("user_id", userId)
-          .eq("category", category);
+          .eq("category", category)
+          .gte("date", startOfSelectedMonth.toISOString())
+          .lte("date", endOfSelectedMonth.toISOString());
 
         if (error) {
           console.log(`Error fetching ${category} Expenses:`, error);
@@ -111,15 +124,24 @@ const Analysis = () => {
 
   useEffect(() => {
     fetchAmounts();
-  }, [userId]);
-
-  const series = [foodAmount, transportAmount, clothingAmount, otherAmount];
+  }, [userId, currentMonth]);
 
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchAmounts();
     setRefreshing(false);
   };
+
+  const handlePrevMonth = () => {
+    setCurrentMonth(subMonths(currentMonth, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(addMonths(currentMonth, 1));
+  };
+
+  const series = [foodAmount, transportAmount, clothingAmount, otherAmount];
+  const hasTransactions = series.some((amount) => amount > 0);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -138,91 +160,120 @@ const Analysis = () => {
           }
         >
           <Text style={styles.header}>Analytics</Text>
-          <View style={{ alignItems: "center", margin: 10, marginTop: 0 }}>
-            <PieChart
-              widthAndHeight={widthAndHeight}
-              series={series}
-              sliceColor={sliceColor}
-              doughnut={true}
-              coverRadius={0.5}
-              coverFill={"#284452"}
+          <View style={styles.navigation}>
+            <IconButton
+              icon="chevron-left"
+              size={30}
+              onPress={handlePrevMonth}
+              iconColor="white"
+            />
+            <Text style={styles.monthLabel}>
+              {format(currentMonth, "MMMM yyyy")}
+            </Text>
+            <IconButton
+              icon="chevron-right"
+              size={30}
+              onPress={handleNextMonth}
+              iconColor="white"
             />
           </View>
-          <View style={styles.legend}>
-            {categories.map((category, index) => (
-              <View key={category} style={styles.legendItem}>
-                <View
-                  style={[
-                    styles.legendColor,
-                    { backgroundColor: sliceColor[index] },
-                  ]}
-                />
-                <Text style={styles.legendText}>{category}</Text>
-              </View>
-            ))}
+          <View style={{ alignItems: "center", margin: 10, marginTop: 0 }}>
+            {hasTransactions ? (
+              <PieChart
+                widthAndHeight={widthAndHeight}
+                series={series}
+                sliceColor={sliceColor}
+                doughnut={true}
+                coverRadius={0.5}
+                coverFill={"#284452"}
+              />
+            ) : (
+              <Text style={styles.noTransactionsText}>
+                No transactions this month.
+              </Text>
+            )}
           </View>
-          <View style={styles.cardSection}>
-            {categories.map((category, index) => (
-              <Card
-                key={category}
-                style={[
-                  styles.card,
-                  { backgroundColor: categoryColors[category] || "#FFFFFF" },
-                ]}
-              >
-                <Card.Content style={styles.cardContent}>
-                  <View style={styles.iconContainer}>
-                    <Icon
-                      name={categoryIcons[category] || "dots-horizontal"}
-                      size={40}
-                      color="#839dad"
-                    />
-                  </View>
-                  <View style={styles.cardLeft}>
-                    <Title style={styles.itemName}>{category}</Title>
-                  </View>
-                  <View style={styles.cardRight}>
-                    <Text
+          {hasTransactions && (
+            <>
+              <View style={styles.legend}>
+                {categories.map((category, index) => (
+                  <View key={category} style={styles.legendItem}>
+                    <View
                       style={[
-                        styles.priceText,
-                        {
-                          color:
-                            series[index].toFixed(2) < 0
-                              ? "#d32c47"
-                              : "#d32c47",
-                        }, //to do
+                        styles.legendColor,
+                        { backgroundColor: sliceColor[index] },
                       ]}
-                    >
-                      {`$${series[index].toFixed(2)}`}
-                    </Text>
+                    />
+                    <Text style={styles.legendText}>{category}</Text>
                   </View>
-                </Card.Content>
-              </Card>
-            ))}
-            <Card style={styles.totalCard}>
-              <Card.Content style={styles.cardContent}>
-                <View style={styles.iconContainer}>
-                  <Icon name="currency-usd" size={40} color="#839dad" />
-                </View>
-                <View style={styles.cardLeft}>
-                  <Title style={styles.itemName}>Total</Title>
-                </View>
-                <View style={styles.cardRight}>
-                  <Text
+                ))}
+              </View>
+              <View style={styles.cardSection}>
+                {categories.map((category, index) => (
+                  <Card
+                    key={category}
                     style={[
-                      styles.priceText,
+                      styles.card,
                       {
-                        color:
-                          dailyTotal.toFixed(2) < 0 ? "#d32c47" : "#d32c47",
-                      }, //to do
+                        backgroundColor: categoryColors[category] || "#FFFFFF",
+                      },
                     ]}
                   >
-                    {`$${dailyTotal.toFixed(2)}`}
-                  </Text>
-                </View>
-              </Card.Content>
-            </Card>
-          </View>
+                    <Card.Content style={styles.cardContent}>
+                      <View style={styles.iconContainer}>
+                        <Icon
+                          name={categoryIcons[category] || "dots-horizontal"}
+                          size={40}
+                          color="#839dad"
+                        />
+                      </View>
+                      <View style={styles.cardLeft}>
+                        <Title style={styles.itemName}>{category}</Title>
+                      </View>
+                      <View style={styles.cardRight}>
+                        <Text
+                          style={[
+                            styles.priceText,
+                            {
+                              color:
+                                series[index].toFixed(2) < 0
+                                  ? "#d32c47"
+                                  : "#d32c47",
+                            },
+                          ]}
+                        >
+                          {`$${series[index].toFixed(2)}`}
+                        </Text>
+                      </View>
+                    </Card.Content>
+                  </Card>
+                ))}
+                <Card style={styles.totalCard}>
+                  <Card.Content style={styles.cardContent}>
+                    <View style={styles.iconContainer}>
+                      <Icon name="currency-usd" size={40} color="#839dad" />
+                    </View>
+                    <View style={styles.cardLeft}>
+                      <Title style={styles.itemName}>Total</Title>
+                    </View>
+                    <View style={styles.cardRight}>
+                      <Text
+                        style={[
+                          styles.priceText,
+                          {
+                            color:
+                              dailyTotal.toFixed(2) < 0 ? "#d32c47" : "#d32c47",
+                          },
+                        ]}
+                      >
+                        {`$${dailyTotal.toFixed(2)}`}
+                      </Text>
+                    </View>
+                  </Card.Content>
+                </Card>
+              </View>
+            </>
+          )}
         </ScrollView>
       )}
     </SafeAreaView>
@@ -242,6 +293,17 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: 12,
     color: "white",
+  },
+  navigation: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  monthLabel: {
+    fontSize: 25,
+    fontWeight: "bold",
+    color: "#ffffff",
   },
   legend: {
     flexDirection: "row",
@@ -312,6 +374,13 @@ const styles = StyleSheet.create({
   },
   cardRight: {
     alignItems: "flex-end",
+  },
+  noTransactionsText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 20,
   },
 });
 

@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  RefreshControl,
-  Platform,
-} from "react-native";
+import { StyleSheet, View, FlatList, RefreshControl } from "react-native";
 import {
   IconButton,
   Card,
@@ -15,10 +9,16 @@ import {
   Text,
 } from "react-native-paper";
 import supabase from "../../../config/supabaseClient";
-import { format, subMonths, addMonths } from "date-fns";
+import {
+  format,
+  subMonths,
+  addMonths,
+  startOfMonth,
+  endOfMonth,
+} from "date-fns";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons"; // Import the icon library
-import { useNavigation } from "@react-navigation/native"; // Import useNavigation
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useNavigation } from "@react-navigation/native";
 
 const categoryIcons: { [key: string]: string } = {
   Food: "food",
@@ -96,11 +96,11 @@ const TransactionScreen = () => {
   };
 
   const filterTransactionsByMonth = (transactions: any[], month: Date) => {
-    const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
-    const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+    const start = startOfMonth(month);
+    const end = endOfMonth(month);
     return transactions.filter((transaction) => {
       const transactionDate = new Date(transaction.date);
-      return transactionDate >= startOfMonth && transactionDate <= endOfMonth;
+      return transactionDate >= start && transactionDate <= end;
     });
   };
 
@@ -141,7 +141,7 @@ const TransactionScreen = () => {
           <View style={styles.cardLeft}>
             <Title style={styles.itemName}>{item.itemName}</Title>
             <Paragraph style={styles.itemDetails}>
-              Date: {item.date.substring(5, 15)}
+              Date: {item.date.substring(0, 10)}
             </Paragraph>
           </View>
           <View style={styles.cardRight}>
@@ -157,7 +157,7 @@ const TransactionScreen = () => {
             </Text>
             <IconButton
               icon="pencil"
-              size={15}
+              size={20}
               onPress={() => handleEdit(item)}
               iconColor="#121E26"
               style={styles.iconButton}
@@ -206,14 +206,20 @@ const TransactionScreen = () => {
           iconColor="white"
         />
       </View>
-      <FlatList
-        data={filteredTransactions}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
+      {filteredTransactions.length === 0 ? (
+        <Text style={styles.noTransactionsText}>
+          No transactions this month.
+        </Text>
+      ) : (
+        <FlatList
+          data={filteredTransactions}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -268,7 +274,7 @@ const styles = StyleSheet.create({
   },
   itemName: {
     color: "#000000",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
     marginTop: -2,
   },
@@ -285,6 +291,13 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     marginTop: -5,
+  },
+  noTransactionsText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 20,
   },
 });
 

@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
   },
   card: {
     marginHorizontal: 10,
+    marginVertical: 2,
     backgroundColor: "white",
   },
   acceptButton: {
