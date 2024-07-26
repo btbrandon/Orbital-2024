@@ -1,20 +1,20 @@
-import { useState } from "react";
-import React from "react";
+import { useState } from 'react';
+import React from 'react';
 import {
   Text,
   TextInput,
   View,
   Image,
   StyleSheet,
-  Alert,
   StatusBar,
   TouchableOpacity,
   ImageBackground,
-} from "react-native";
-import { Link, router } from "expo-router";
-import supabase from "../config/supabaseClient";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Snackbar } from "react-native-paper";
+} from 'react-native';
+import { Link, router } from 'expo-router';
+import supabase from '../config/supabaseClient';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Snackbar } from 'react-native-paper';
+
 
 const Login = () => {
   StatusBar.setBarStyle("light-content", true);
@@ -64,6 +64,7 @@ const Login = () => {
       router.replace("./(tabs)/Homepage");
     } catch (error: any) {
       setSnackbarMessage("An unexpected error occurred.");
+      console.log(error.message);
       setSnackbarVisible(true);
     }
   };
@@ -134,6 +135,10 @@ const Login = () => {
             visible={snackbarVisible}
             onDismiss={() => setSnackbarVisible(false)}
             duration={3000}
+            action={{
+              label: "Close",
+              onPress: () => setSnackbarVisible(false),
+            }}
           >
             {snackbarMessage}
           </Snackbar>
@@ -150,7 +155,7 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     flex: 1,
-    resizeMode: "cover", // or stretch
+    resizeMode: "cover",
   },
   content: {
     flex: 1,

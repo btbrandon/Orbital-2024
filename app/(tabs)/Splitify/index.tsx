@@ -17,17 +17,21 @@ import {
   Snackbar,
 } from "react-native-paper";
 import supabase from "../../../config/supabaseClient";
+import { Feather } from "@expo/vector-icons";
+
 
 const Index = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [userId, setUserId] = useState<number>();
+  const [username, setUsername] = useState<number>();
   const [ioUsTotal, setIoUsTotal] = useState<number>(0);
   const [uomEsTotal, setUomEsTotal] = useState<number>(0);
   const [uomEsDetails, setUomEsDetails] = useState<any[]>([]);
   const [ioUsDetails, setIoUsDetails] = useState<any[]>([]);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [userBadge, setUserBadge] = useState<string>("");
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -39,67 +43,92 @@ const Index = () => {
     router.push("../(tabs)/Splitify/SplitBill");
   };
 
+  const handleNotification = () => {
+    router.push("../(tabs)/Splitify/Notification")
+  }
+
   const fetchAmounts = async () => {
     if (!userId) return;
-
+  
     try {
       const { data, error } = await supabase
         .from("bill")
         .select("owee, ower, amount")
         .or(`owee.eq.${userId},ower.eq.${userId}`);
-
+  
       if (error) throw error;
-
+  
       let ioUs = 0;
       let uomEs = 0;
       const uomEsDetailsMap = {};
       const ioUsDetailsMap = {};
 
+      const fetchUserDetailsById = async (userId) => {
+        const { data, error } = await supabase
+          .from("user_credentials")
+          .select("username, badge, user_id")
+          .eq("user_id", userId)
+          .single();
+  
+        if (error) {
+          console.error("Error fetching user details:", error.message);
+          return null;
+        }
+  
+        return data;
+      };
+  
       for (const bill of data) {
+        let userResponse;
+        let userData;
+        let username;
+        let badge;
+
         if (bill.owee === userId) {
           uomEs += bill.amount;
-          const userResponse = await supabase
-            .from("user_credentials")
-            .select("username")
-            .eq("user_id", bill.ower);
-
-          const username = userResponse.data[0]?.username;
-
+          userResponse = await fetchUserDetailsById(bill.ower);
+          userData = userResponse;
+        username = userData?.username;
+        badge = userData?.badge || "No badge yet";
+  
           if (uomEsDetailsMap[username]) {
-            uomEsDetailsMap[username] += bill.amount;
+            uomEsDetailsMap[username].amount += bill.amount;
           } else {
-            uomEsDetailsMap[username] = bill.amount;
+            uomEsDetailsMap[username] = { amount: bill.amount, badge, id: userData?.user_id };
           }
         } else if (bill.ower === userId) {
           ioUs += bill.amount;
-          const userResponse = await supabase
-            .from("user_credentials")
-            .select("username")
-            .eq("user_id", bill.owee);
-
-          const username = userResponse.data[0]?.username;
+          userResponse = await fetchUserDetailsById(bill.owee);
+          userData = userResponse;
+          username = userData?.username;
+          badge = userData?.badge || "No badge yet";
+  
           if (ioUsDetailsMap[username]) {
-            ioUsDetailsMap[username] += bill.amount;
+            ioUsDetailsMap[username].amount += bill.amount;
           } else {
-            ioUsDetailsMap[username] = bill.amount;
+            ioUsDetailsMap[username] = { amount: bill.amount, badge, id: userData?.user_id };
           }
         }
       }
-
+  
       setIoUsTotal(ioUs);
       setUomEsTotal(uomEs);
       setUomEsDetails(
         Object.entries(uomEsDetailsMap)
-          .filter(([_, amount]) => amount > 0)
-          .map(([username, amount]) => ({
+          .filter(([_, detail]) => detail.amount > 0)
+          .map(([username, detail]) => ({
             username,
-            amount,
+            amount: detail.amount,
+            badge: detail.badge,
+            id: detail.id,
           }))
       );
       setIoUsDetails(
-        Object.entries(ioUsDetailsMap).map(([username, amount]) => ({
+        Object.entries(ioUsDetailsMap).map(([username, detail]) => ({
           username,
-          amount,
+          amount: detail.amount,
+          badge: detail.badge,
+          id: detail.id,
         }))
       );
     } catch (error) {
@@ -152,10 +181,74 @@ const Index = () => {
       setUomEsTotal(uomEsTotal - amount);
       setSnackbarMessage("Bill deleted successfully!");
       setSnackbarVisible(true);
+
+      await updateBadgeStatus(oweeId);
+      await fetchUserBadge();
+
     } catch (error) {
       console.error("Error deleting bill:", error);
     }
   };
+
+  const fetchUserBadge = async () => {
+    if (!userId) return;
+
+    try {
+      const { data, error } = await supabase
+        .from("user_credentials")
+        .select("badge")
+        .eq("user_id", userId)
+        .single();
+
+      if (error) throw error;
+
+      setUserBadge(data?.badge || "No badge yet");
+    } catch (error) {
+      console.error("Error fetching user badge:", error);
+    }
+  };
+
+  const updateBadgeStatus = async (userId) => {
+    try {
+      // Fetch all bills where the user is the owee
+      const { data, error } = await supabase
+        .from("bill")
+        .select("created_at, paid_at")
+        .eq("owee", userId);
+
+      if (error) throw error;
+
+      if (data.length === 0) return;
+
+      let totalDays = 0;
+      data.forEach((bill) => {
+        if (bill.paid_at) {
+          const createdAt = new Date(bill.created_at);
+          const paidAt = new Date(bill.paid_at);
+          totalDays += (paidAt - createdAt) / (1000 * 60 * 60 * 24);
+        }
+      });
+  
+      const averageDays = totalDays / data.length;
+  
+      let badge = "No badge yet";
+      if (averageDays <= 1) {
+        badge = "gold";
+      } else if (averageDays <= 3) {
+        badge = "silver";
+      }
+  
+      const { error: updateError } = await supabase
+        .from("user_credentials")
+        .update({ badge })
+        .eq("user_id", userId);
+  
+      if (updateError) throw updateError;
+    } catch (error) {
+      console.error("Error updating badge status:", error);
+    }
+  };
+
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -172,7 +265,7 @@ const Index = () => {
         .eq("email", userEmail);
 
       if (IDerror) {
-        console.error("Error fetching username:", IDerror.message);
+        console.error("Error fetching user ID:", IDerror.message);
         return;
       }
 
@@ -185,21 +278,66 @@ const Index = () => {
   }, []);
 
   useEffect(() => {
+    const fetchUsername = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.log("Error fetching username:", error);
+        return;
+      }
+      const userEmail = data?.user?.email;
+
+      const { data: IDdata, error: IDerror } = await supabase
+        .from("user_credentials")
+        .select("username")
+        .eq("email", userEmail);
+
+      if (IDerror) {
+        console.error("Error fetching username:", IDerror.message);
+        return;
+      }
+
+      const newUsername = IDdata[0]?.username;
+      setUsername(newUsername);
+      setLoading(false);
+    };
+
+    fetchUsername();
+  }, []);
+
+  useEffect(() => {
     if (userId) {
       fetchAmounts();
+      fetchUserBadge();
     }
   }, [userId]);
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        <Title style={styles.header}>Splitify</Title>
-        <Title style={styles.header2}>I Owe</Title>
+  const renderBadge = (badge) => {
+    switch (badge) {
+      case "gold":
+        return <Feather name="award" size={30} color="gold" />;
+      case "silver":
+        return <Feather name="award" size={30} color="grey" />;
+      case "bronze":
+        return <Feather name="award" size={30} color="brown" />;
+      default:
+        return <Text style={styles.noBadgeText}>{"No badge yet"}</Text>;
+    }
+  };
+
+return (
+  <SafeAreaView style={styles.container}>
+    <ScrollView
+      contentContainerStyle={{ paddingBottom: 60, flexGrow: 1 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      <Text style={styles.header}>Splitify</Text>
+      <View style={styles.badgeContainer}>
+        <Text style={styles.badgeText}>Your Badge: </Text>
+        {renderBadge(userBadge)}
+      </View>
+      <Title style={styles.header2}>I Owe</Title>
         <View>
           {loading ? (
             <ActivityIndicator animating={true} style={styles.loading} />
@@ -299,7 +437,6 @@ const styles = {
     fontSize: 20,
     marginTop: 10,
     marginBottom: 10,
-
     marginHorizontal: 10,
     color: "#ffffff",
     fontWeight: "bold",
@@ -309,7 +446,7 @@ const styles = {
     fontWeight: "bold",
     alignSelf: "center",
     justifyContent: "center",
-    marginTop: -8,
+    marginVertical: -8,
     marginRight: -20,
   },
   amountTextIOwe: {
@@ -378,6 +515,23 @@ const styles = {
     fontSize: 20,
     alignSelf: "center",
     marginTop: 10,
+  },
+  badgeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 10,
+  },
+  badgeText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginRight: 10,
+  },
+  noBadgeText: {
+    color: "#ffffff",
+    fontSize: 18,
+    fontWeight: "bold"
   },
 };
 

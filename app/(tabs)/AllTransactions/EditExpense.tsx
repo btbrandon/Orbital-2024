@@ -131,6 +131,10 @@ const EditExpense = () => {
           visible={snackbarVisible}
           onDismiss={() => setSnackbarVisible(false)}
           duration={3000}
+          action={{
+            label: "Close",
+            onPress: () => setSnackbarVisible(false),
+          }}
         >
           {snackbarMessage}
         </Snackbar>

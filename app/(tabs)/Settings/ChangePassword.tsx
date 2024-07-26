@@ -12,7 +12,7 @@ import supabase from "../../../config/supabaseClient";
 import React from "react";
 import { Snackbar } from "react-native-paper";
 
-const ChangeCredentials = () => {
+const ChangePassword = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -92,9 +92,6 @@ const ChangeCredentials = () => {
     }
 
     const updates = {
-      id: userId,
-      username: username,
-      email: email,
       password: password,
     };
 
@@ -103,8 +100,6 @@ const ChangeCredentials = () => {
     const { error: userTableError } = await supabase
     .from('user_credentials')
     .update({
-      email: email,
-      username: username,
       password: password,
     })
     .eq('user_id', userId);
@@ -113,7 +108,7 @@ const ChangeCredentials = () => {
     if (updateError) {
       setSnackbarMessage(updateError.message);
     } else {
-      setSnackbarMessage('Credentials updated successfully!');
+      setSnackbarMessage('Password updated successfully!');
     }
     
     setSnackbarVisible(true);
@@ -123,19 +118,7 @@ const ChangeCredentials = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <Text style={styles.header}>Change Credentials</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="New Username"
-          value={username}
-          onChangeText={setUsername}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="New Email"
-          value={email}
-          onChangeText={setEmail}
-        />
+        <Text style={styles.header}>Change Password</Text>
         <TextInput
           style={styles.input}
           secureTextEntry
@@ -219,4 +202,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChangeCredentials;
+export default ChangePassword;

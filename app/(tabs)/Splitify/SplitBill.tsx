@@ -142,7 +142,7 @@ const SplitBill = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, paddingVertical: 60 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
@@ -166,6 +166,10 @@ const SplitBill = () => {
           visible={snackbarVisible}
           onDismiss={() => setSnackbarVisible(false)}
           duration={3000}
+          action={{
+            label: "Close",
+            onPress: () => setSnackbarVisible(false),
+          }}
         >
           {snackbarMessage}
         </Snackbar>

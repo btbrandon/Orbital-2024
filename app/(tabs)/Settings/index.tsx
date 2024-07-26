@@ -31,7 +31,7 @@ const index = () => {
         <Text style={styles.header}>Settings</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={handleUpdateInfo}>
-            <Text style={styles.buttonText}>Update Info</Text>
+            <Text style={styles.buttonText}>Change Password</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.buttonContainer}>

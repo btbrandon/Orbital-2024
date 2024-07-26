@@ -154,6 +154,10 @@ const NewExpense = () => {
           visible={snackbarVisible}
           onDismiss={() => setSnackbarVisible(false)}
           duration={3000}
+          action={{
+            label: "Close",
+            onPress: () => setSnackbarVisible(false),
+          }}
         >
           {snackbarMessage}
         </Snackbar>
@@ -178,7 +182,7 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     flexGrow: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
   },
   label: {
     fontSize: 22,
@@ -195,6 +199,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     marginBottom: 15,
+    marginHorizontal: 20,
   },
   buttonContainer: {
     display: "flex",
@@ -202,10 +207,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 20,
     color: "white",
+    marginHorizontal: 20,
   },
   button: {
     backgroundColor: "#121E26",
-    paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 10,
     flex: 1,
@@ -229,6 +234,7 @@ const pickerSelectStyles = {
     borderRadius: 5,
     backgroundColor: "white",
     marginBottom: 15,
+    marginHorizontal: 20,
   },
   inputAndroid: {
     fontSize: 16,

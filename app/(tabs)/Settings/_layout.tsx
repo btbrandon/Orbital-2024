@@ -10,8 +10,8 @@ const StackLayout = () => {
         options={{ title: "Confirm Password" }}
       />
       <Stack.Screen
-        name="ChangeCredentials"
-        options={{ title: "Change Credentials" }}
+        name="ChangePassword"
+        options={{ title: "Change Password" }}
       />
     </Stack>
   );

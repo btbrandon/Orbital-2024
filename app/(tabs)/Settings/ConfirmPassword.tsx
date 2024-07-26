@@ -57,7 +57,7 @@ const ConfirmPassword = () => {
       setSnackbarMessage("Incorrect password. Please try again.");
       setSnackbarVisible(true);
     } else {
-      router.push("../Settings/ChangeCredentials");
+      router.push("../Settings/ChangePassword");
     }
   };
 

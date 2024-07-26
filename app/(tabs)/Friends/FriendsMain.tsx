@@ -10,12 +10,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 import supabase from "../../../config/supabaseClient";
+import { Feather } from "@expo/vector-icons";
 
 const index = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [userId, setUserId] = useState<number>();
-  const [friends, setFriends] = useState([]);
+  const [friends, setFriends] = useState<any[]>([]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -44,9 +45,10 @@ const index = () => {
 
       const friendIds = data.map((relationship) => relationship.user2);
 
+      // Fetch friends' details including badges
       const { data: friendsData, error: friendsError } = await supabase
         .from("user_credentials")
-        .select("user_id, username")
+        .select("user_id, username, badge")
         .in("user_id", friendIds);
 
       if (friendsError) throw friendsError;
@@ -57,7 +59,7 @@ const index = () => {
     }
   };
 
-  // get this User's ID
+  // Get this User's ID
   useEffect(() => {
     const fetchUserId = async () => {
       const { data, error } = await supabase.auth.getUser();
@@ -91,6 +93,39 @@ const index = () => {
     }
   }, [userId]);
 
+  const renderBadge = (badge: string) => {
+    switch (badge) {
+      case "gold":
+        return (
+          <View style={styles.badgeContainer}>
+            <Feather name="award" size={24} color="gold" />
+            <Text style={styles.badgeText}>Gold</Text>
+          </View>
+        );
+      case "silver":
+        return (
+          <View style={styles.badgeContainer}>
+            <Feather name="award" size={24} color="silver" />
+            <Text style={styles.badgeText}>Silver</Text>
+          </View>
+        );
+      case "bronze":
+        return (
+          <View style={styles.badgeContainer}>
+            <Feather name="award" size={24} color="brown" />
+            <Text style={styles.badgeText}>Bronze</Text>
+          </View>
+        );
+      default:
+        return (
+          <View style={styles.badgeContainer}>
+            <Feather name="award" size={24} color="white" />
+            <Text style={styles.badgeText}>No Badge Yet</Text>
+          </View>
+        );
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
@@ -108,6 +143,7 @@ const index = () => {
             friends.map((friend) => (
               <View key={friend.user_id} style={styles.friendItem}>
                 <Text style={styles.friendText}>{friend.username}</Text>
+                {renderBadge(friend.badge)}
               </View>
             ))
           ) : (
@@ -176,13 +212,26 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     marginHorizontal: 15,
     borderRadius: 5,
+    flexDirection: "row",
+    alignItems: "center",
   },
   friendText: {
     color: "#000000",
     fontFamily: "Calibri",
     fontWeight: "bold",
     fontSize: 12,
-    alignSelf: "center",
+    flex: 1,
+  },
+  badgeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  badgeText: {
+    marginLeft: 5,
+    color: "#000000",
+    fontFamily: "Calibri",
+    fontWeight: "bold",
+    fontSize: 12,
   },
   loadingText: {
     color: "white",
