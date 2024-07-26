@@ -75,6 +75,10 @@ const ChangeCredentials = () => {
       setSnackbarMessage("Passwords do not match.");
       setSnackbarVisible(true);
       return;
+    } else if (password.length < 6) {
+      setSnackbarMessage("Password should be at least 6 characters")
+      setSnackbarVisible(true);
+      return;
     }
 
     const {
@@ -96,12 +100,24 @@ const ChangeCredentials = () => {
 
     const { error: updateError } = await supabase.auth.updateUser(updates);
 
+    const { error: userTableError } = await supabase
+    .from('user_credentials')
+    .update({
+      email: email,
+      username: username,
+      password: password,
+    })
+    .eq('user_id', userId);
+
+      
     if (updateError) {
       setSnackbarMessage(updateError.message);
     } else {
-      setSnackbarMessage("Credentials updated successfully!");
+      setSnackbarMessage('Credentials updated successfully!');
     }
+    
     setSnackbarVisible(true);
+
   };
 
   return (
