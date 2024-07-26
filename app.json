@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/Logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "white"
+      "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true,
@@ -31,6 +31,20 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-router"]
+    "plugins": ["expo-router"],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "8dbafc4f-09cb-42dc-9554-57650bd86bc4"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8dbafc4f-09cb-42dc-9554-57650bd86bc4"
+    }
   }
 }
